@@ -163,11 +163,11 @@ InstallMethod( BackwardPostnikovSystemAtOp,
       
       H := HomotopyMorphisms( PreCompose( alpha, beta ) );
       
-      maps := AsZFunction( i -> MorphismBetweenDirectSums( [ [ -alpha[ i ], H[ i ] ] ] ) );
+      maps := AsZFunction( i -> MorphismBetweenDirectSums( [ [ alpha[ i ], -H[ i ] ] ] ) );
       
       d := HomotopyCategoryMorphism(
                   Source( alpha ),
-                  InverseShiftOnObject( StandardConeObject( C ^ m ) ),
+                  InverseShiftOnObject( StandardConeObject( beta ) ),
                   maps
                 );
                 
@@ -460,11 +460,11 @@ InstallMethod( BackwardPostnikovSystemAtOp,
       
       H := HomotopyMorphisms( PreCompose( alpha, beta ) );
       
-      maps := AsZFunction( i -> MorphismBetweenDirectSums( [ [ -alpha[ i ], H[ i ] ] ] ) );
+      maps := AsZFunction( i -> MorphismBetweenDirectSums( [ [ alpha[ i ], -H[ i ] ] ] ) );
       
       d := HomotopyCategoryMorphism(
                   Source( alpha ),
-                  InverseShiftOnObject( StandardConeObject( C ^ m ) ),
+                  InverseShiftOnObject( StandardConeObject( beta ) ),
                   maps
                 );
                 
