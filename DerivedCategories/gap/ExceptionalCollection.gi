@@ -573,7 +573,7 @@ InstallMethod( QuiverAlgebraFromExceptionalCollection,
         [ IsExceptionalCollection, IsField ],
         
   function( collection, field )
-    local nr_vertices, arrows, sources, ranges, labels, quiver, A, relations, paths_in_collection, paths_in_quiver, rel, i, j, algebroid, name, r, v, vertices_labels;
+    local nr_vertices, arrows, sources, ranges, v, labels, extract_latex_string, arrows_latex, vertices_latex, quiver, A, relations, paths_in_collection, paths_in_quiver, rel, name, r, i, j;
     
     nr_vertices := NumberOfObjects( collection );
     
@@ -598,8 +598,32 @@ InstallMethod( QuiverAlgebraFromExceptionalCollection,
       a -> Concatenation( v, String( a[ 1 ] ),
               "_", String( a[ 2 ] ), "_", String( a[ 3 ] ) ) );
     
+    extract_latex_string :=
+      function( s )
+        local r;
+        
+        r := SplitString( s{ [ 2 .. Size( s ) ] }, "_" );
+        
+        return Concatenation( v, "_{", r[ 1 ], ",", r[ 2 ], "}^{", r[ 3 ], "}" );
+        
+      end;
+    
+    arrows_latex := List( labels, extract_latex_string );
+    
+    if ForAny( collection!.vertices_labels, l -> Int( l ) <> fail ) then
+      
+      vertices_latex := List( [ 1 .. nr_vertices ], i -> Concatenation( "E_{", String( i ), "}" ) );
+      
+    else
+      
+      vertices_latex := collection!.vertices_labels;
+      
+    fi;
+    
     quiver := RightQuiver( collection!.quiver,
                 collection!.vertices_labels, labels, sources, ranges );
+    
+    SetLabelsAsLaTeXStrings( quiver, vertices_latex, arrows_latex );
     
     A := PathAlgebra( field, quiver );
     
@@ -710,9 +734,26 @@ InstallMethod( CategoryOfQuiverRepresentationsOverOppositeAlgebra,
 ##
 InstallMethod( HomotopyCategoryAttr,
           [ IsExceptionalCollection ],
-          
-  collection -> HomotopyCategory( AdditiveClosure( DefiningFullSubcategory( collection ) ) )
-);
+  function( collection )
+    local ambient_category, complexes_category, collection_plus;
+    
+    ambient_category := AmbientCategory( collection );
+    
+    complexes_category := UnderlyingCategory( ambient_category );
+    
+    collection_plus := AdditiveClosure( DefiningFullSubcategory( collection ) );
+    
+    if IsChainComplexCategory( complexes_category ) then
+      
+      return HomotopyCategory( collection_plus, false );
+      
+    elif IsCochainComplexCategory( complexes_category ) then
+    
+      return HomotopyCategory( collection_plus, true );
+      
+    fi;
+    
+end );
 
 InstallOtherMethod( HomotopyCategory,
           [ IsExceptionalCollection ],
@@ -1364,7 +1405,7 @@ end );
 ##
 InstallGlobalFunction( RandomQuiverAlgebraWhoseIndecProjectiveRepsAreExceptionalCollection,
   function( field, nr_vertices, nr_arrows, nr_relations )
-    local sources_of_arrows, ranges_of_arrows, arrows, labels, quiver, A, G, H, df_H, rel, g, e, cat, i;
+    local sources_of_arrows, ranges_of_arrows, arrows, labels, extract_latex_string, arrows_latex, vertices_latex, quiver, A, G, H, df_H, rel, g, e, i;
     
     sources_of_arrows := List( [ 1 .. nr_arrows ],
       i -> Random( [ 1 .. nr_vertices - 1 ] ) );
@@ -1375,16 +1416,39 @@ InstallGlobalFunction( RandomQuiverAlgebraWhoseIndecProjectiveRepsAreExceptional
     arrows := ListN( sources_of_arrows, ranges_of_arrows, {s,r} -> [ s, r ] );
     
     arrows := Collected( arrows );
-    
+        
     sources_of_arrows := Concatenation( List( arrows, a -> List( [ 1 .. a[ 2 ] ], k -> a[ 1 ][ 1 ] ) ) );
     
     ranges_of_arrows := Concatenation( List( arrows, a -> List( [ 1 .. a[ 2 ] ], k -> a[ 1 ][ 2 ] ) ) );
     
     labels := Concatenation( List( arrows, a -> List( [ 1 .. a[ 2 ] ], 
-      k -> Concatenation( "o", String( a[ 1 ][ 1 ] ), "_o", String( a[ 1 ][ 2 ] ), "_", String( k )  ) ) ) );
+      k -> Concatenation( 
+                "r",
+                String( a[ 1 ][ 1 ] ),
+                "_",
+                String( a[ 1 ][ 2 ] ),
+                "_",
+                String( k ) 
+              ) ) ) );
     
+    extract_latex_string :=
+      function( s )
+        local r;
+        
+        r := SplitString( s{ [ 2 .. Size( s ) ] }, "_" );
+        
+        return Concatenation( "r_{", r[ 1 ], ",", r[ 2 ], "}^{", r[ 3 ], "}" );
+        
+      end;
+    
+    arrows_latex := List( labels, extract_latex_string );
+    
+    vertices_latex := List( [ 1 .. nr_vertices ], i -> Concatenation( "V_", String( i ) ) );
+
     quiver := RightQuiver( "Q", [ 1 .. nr_vertices ],
                 labels, sources_of_arrows, ranges_of_arrows );
+    
+    SetLabelsAsLaTeXStrings( quiver, vertices_latex, arrows_latex );
     
     A := PathAlgebra( field, quiver );
     

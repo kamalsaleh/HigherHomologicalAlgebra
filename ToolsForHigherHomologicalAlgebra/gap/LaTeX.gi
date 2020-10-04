@@ -60,15 +60,13 @@ InstallMethod( VisualizeLaTeXString,
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{geometry}
+\newgeometry{vmargin={10mm}, hmargin={10mm,10mm}}
 \setcounter{MaxMatrixCols}{100}
 \begin{document}
-\begin{center}
-\scalebox{""",
-scale,
-"""}{$""",
-    str,
+\resizebox{\textwidth}{!}{$""",
+str,
 """$}
-\end{center}
 \end{document}
 """
     );
