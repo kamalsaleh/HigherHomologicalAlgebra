@@ -1,0 +1,8 @@
+[deps]
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+HomalgProject = "50bd374c-87b5-11e9-015a-2febe71398bd"
+Graphviz_jll = "3c863552-8265-54e4-a6dc-903eb78fde85"
+lib4ti2_jll = "1493ae25-0f90-5c0e-a06c-8c5077d6d66f"
+
+[compat]
+julia = "1.3"
