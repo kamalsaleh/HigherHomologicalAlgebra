@@ -77,8 +77,8 @@ Dependencies := rec(
         ],
   SuggestedOtherPackages :=
         [
-          [ "GradedModulePresentationsForCAP", ">= 2019.08.07" ],
-          [ "FreydCategoriesForCAP", ">= 2020.09.21" ]
+          #[ "GradedModulePresentationsForCAP", ">= 2019.08.07" ],
+          #[ "FreydCategoriesForCAP", ">= 2020.09.21" ]
         ],
   ExternalConditions := [ ],
 ),

@@ -74,13 +74,15 @@ Dependencies := rec(
   NeededOtherPackages := [ 
                            [ "GAPDoc", ">= 1.5" ],
                            [ "CAP", ">= 2020.08.01" ],
+                           [ "ToolsForHigherHomologicalAlgebra", ">= 2020.09.27" ],
                            [ "ComplexesCategories", ">= 2020.09.01" ],
                            [ "GeneralizedMorphismsForCAP", "2019.01.16" ],
                            [ "StableCategories", ">= 2020.07.16" ],
                            [ "TriangulatedCategories", ">= 2020.10.01" ]
                          ],
   SuggestedOtherPackages := [
-                              [ "Algebroids", ">= 2020.04.25" ]
+                              [ "Algebroids", ">= 2020.04.25" ],
+                              [ "ToolsForHigherHomologicalAlgebra", ">= 2020.07.27" ]
                             ],
   ExternalConditions := [ ],
 ),

@@ -1,9 +1,103 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
-# ToolsForHigherHomologicalAlgebra: Tools for the Higher Homological Algebra project
-#
-# Implementations
-#
+
+
+
+
+
 ##
+InstallMethod( EnhanceHomalgRingWithRandomFunctions,
+          [ IsHomalgRing ],
+          
+  function( R )
+    local random_element_func, random_matrix_func;
+    
+    if IsBound( R!.random_element_func ) and IsBound( R!.random_matrix_func ) then
+      
+      return true;
+    
+    fi;
+    
+    if ( HasIsFreePolynomialRing( R ) and IsFreePolynomialRing( R ) ) or 
+        ( HasIsExteriorRing( R ) and IsExteriorRing( R ) ) then
+      
+      random_element_func :=
+        function(  )
+             local ind, n, l1, l2;
+             
+             ind := Concatenation(  [ One( R ) ], Indeterminates( R ), Indeterminates( R ) );
+             
+             n := Random( [ 1, 1, 1, 2, 2, 3 ] );
+             
+             l1 := List( [ 1 .. n ], i -> Product( Random( Combinations( ind, i ) ) ) );
+             
+             l2 := List( [ 1 .. n ], i -> Random( [ -2, -1, -1, 0, 1, 1, 2 ] ) * One( R ) );
+             
+             return l1 * l2;
+        
+        end;
+        
+      R!.random_element_func := random_element_func;
+    
+    elif ( HasIsFieldForHomalg( R ) and IsFieldForHomalg( R ) ) or
+          ( HasIsIntegersForHomalg( R ) and IsIntegersForHomalg( R ) ) then
+      
+      random_element_func :=
+        function( )
+          
+          return Random( [ -20 .. 20 ] )*One( R );
+        
+        end;
+      
+      R!.random_element_func := random_element_func;
+    
+    elif HasAmbientRing( R ) and IsBound( AmbientRing( R )!.random_element_func ) then
+    
+      random_element_func :=
+        function( )
+          
+          return AmbientRing( R )!.random_element_func(  )/R;
+        
+        end;
+      
+      R!.random_element_func := random_element_func;
+     
+     fi;
+     
+     random_matrix_func :=
+        function( m, n )
+          local L;
+          
+          if m * n = 0 then
+            
+            return HomalgZeroMatrix( m, n, R );
+          
+          else
+            
+            L := List( [ 1 .. m ], i -> List( [ 1 .. n ], j -> R!.random_element_func(  ) ) );
+            
+            return HomalgMatrix( L, m, n, R );
+          
+          fi;
+        
+        end;
+     
+     if IsBound( R!.random_element_func ) then
+       
+       R!.random_matrix_func := random_matrix_func;
+       
+       return true;
+     
+     else
+       
+       return false;
+     
+     fi;
+    
+end );
+
+##
+## For Exterior algebra
+##
+
 InstallMethod( IndicesForBasisOfExteriorAlgebra,
           [ IsHomalgRing and IsExteriorRing ],
           
