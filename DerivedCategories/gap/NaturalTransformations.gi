@@ -288,7 +288,7 @@ InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
           uvw := ExactTriangle(
                     Shift( MorphismFromStandardConeObject( r_0 ), -1 ),
                     r_0,
-                    AdditiveInverseForMorphisms( MorphismIntoStandardConeObject( r_0 ) )
+                    AdditiveInverseForMorphisms( MorphismToStandardConeObject( r_0 ) )
                   );
                   
           j_1 := BackwardPostnikovSystemAt( R, 0 )^1;
@@ -386,7 +386,7 @@ InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
           uvw := ExactTriangle(
                     Shift( MorphismFromStandardConeObject( r_0 ), -1 ),
                     r_0,
-                    AdditiveInverseForMorphisms( MorphismIntoStandardConeObject( r_0 ) )
+                    AdditiveInverseForMorphisms( MorphismToStandardConeObject( r_0 ) )
                   );
                   
           j_m1 := BackwardPostnikovSystemAt( R, 0 )^-1;

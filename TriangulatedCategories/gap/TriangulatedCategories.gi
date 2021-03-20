@@ -19,12 +19,12 @@ StandardConeObject:= rec(
   return_type := "object"
 ),
 
-MorphismIntoStandardConeObjectWithGivenStandardConeObject := rec(
-  installation_name := "MorphismIntoStandardConeObjectWithGivenStandardConeObject",
+MorphismToStandardConeObjectWithGivenStandardConeObject := rec(
+  installation_name := "MorphismToStandardConeObjectWithGivenStandardConeObject",
   filter_list := [ "morphism", "object" ],
   io_type := [ [ "alpha", "cone_alpha" ], [ "range_alpha", "cone_alpha" ] ],
   number_of_diagram_arguments := 1,
-  cache_name := "MorphismIntoStandardConeObjectWithGivenStandardConeObject",
+  cache_name := "MorphismToStandardConeObjectWithGivenStandardConeObject",
   return_type := "morphism"
 ),
 
@@ -37,11 +37,11 @@ MorphismFromStandardConeObjectWithGivenStandardConeObject := rec(
   return_type := "morphism"
 ),
 
-MorphismIntoStandardConeObject := rec(
-  installation_name := "MorphismIntoStandardConeObject",
+MorphismToStandardConeObject := rec(
+  installation_name := "MorphismToStandardConeObject",
   filter_list := [ "morphism" ],
   io_type := [ [ "alpha" ], [ "range_alpha", "cone_alpha" ] ],
-  cache_name := "MorphismIntoStandardConeObject",
+  cache_name := "MorphismToStandardConeObject",
   return_type := "morphism"
 ),
 
@@ -186,10 +186,10 @@ DomainMorphismByOctahedralAxiomWithGivenObjects := rec(
   return_type := "morphism",
 ),
 
-MorphismIntoConeObjectByOctahedralAxiomWithGivenObjects := rec(
-  installation_name := "MorphismIntoConeObjectByOctahedralAxiomWithGivenObjects",
+MorphismToConeObjectByOctahedralAxiomWithGivenObjects := rec(
+  installation_name := "MorphismToConeObjectByOctahedralAxiomWithGivenObjects",
   filter_list := [ "object", "morphism", "morphism", "morphism", "object" ],
-  cache_name := "MorphismIntoConeObjectByOctahedralAxiomWithGivenObjects",
+  cache_name := "MorphismToConeObjectByOctahedralAxiomWithGivenObjects",
   return_type := "morphism",
 ),
 
@@ -382,12 +382,12 @@ InstallMethod( DomainMorphismByRotationAxiom,
           [ IsCapCategoryMorphism ],
   function( alpha )
     
-    return MorphismIntoStandardConeObject( alpha );
+    return MorphismToStandardConeObject( alpha );
     
 end );
 
 ##
-InstallMethod( MorphismIntoConeObjectByRotationAxiom,
+InstallMethod( MorphismToConeObjectByRotationAxiom,
           [ IsCapCategoryMorphism ],
   function( alpha )
     
@@ -429,7 +429,7 @@ InstallMethod( DomainMorphismByInverseRotationAxiom,
 end );
 
 ##
-InstallMethod( MorphismIntoConeObjectByInverseRotationAxiom,
+InstallMethod( MorphismToConeObjectByInverseRotationAxiom,
           [ IsCapCategoryMorphism ], IdFunc
 );
 
@@ -439,7 +439,7 @@ InstallMethod( MorphismFromConeObjectByInverseRotationAxiom,
   function( alpha )
     
     return PreCompose(
-              MorphismIntoStandardConeObject( alpha ),
+              MorphismToStandardConeObject( alpha ),
               UnitIsomorphism( StandardConeObject( alpha ) )
             );
     
@@ -516,7 +516,7 @@ InstallMethod( DomainMorphismByOctahedralAxiom,
 end );
 
 ##
-InstallMethod( MorphismIntoConeObjectByOctahedralAxiom,
+InstallMethod( MorphismToConeObjectByOctahedralAxiom,
           [ IsCapCategoryMorphism, IsCapCategoryMorphism, IsCapCategoryMorphism ],
   function( alpha, beta, gamma )
     local s, r;
@@ -525,7 +525,7 @@ InstallMethod( MorphismIntoConeObjectByOctahedralAxiom,
     
     r := StandardConeObject( beta );
     
-    return MorphismIntoConeObjectByOctahedralAxiomWithGivenObjects( s, alpha, beta, gamma, r );
+    return MorphismToConeObjectByOctahedralAxiomWithGivenObjects( s, alpha, beta, gamma, r );
     
 end );
 
