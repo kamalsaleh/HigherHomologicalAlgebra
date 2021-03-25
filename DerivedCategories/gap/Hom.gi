@@ -67,27 +67,21 @@ InstallMethod( HomFunctorAttr,
           
           j := label[ 2 ];
           
+          for k in [ i, j ] do
+            
+            if not IsBound( bases[ k ] ) then
+              
+              B := BasisOfExternalHom( UnderlyingCell( collection[ k ] ), V );
+              
+              bases[ k ] := B;
+              
+              dim_vec[ k ] := Size( B );
+              
+            fi;
+          
+          od;
+          
           k := label[ 3 ];
-          
-          if not IsBound( bases[ i ] ) then
-            
-            B := BasisOfExternalHom( UnderlyingCell( collection[ i ] ), V );
-            
-            bases[ i ] := B;
-            
-            dim_vec[ i ] := Size( B );
-            
-          fi;
-          
-          if not IsBound( bases[ j ] ) then
-            
-            B := BasisOfExternalHom( UnderlyingCell( collection[ j ] ), V );
-            
-            bases[ j ] := B;
-            
-            dim_vec[ j ] := Size( B );
-             
-          fi;
           
           a := UnderlyingCell( Arrows( collection, i, j )[ k ] );
           
