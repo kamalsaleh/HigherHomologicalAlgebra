@@ -14,7 +14,7 @@ InstallMethod( HomFunctorAttr,
     [ IsExceptionalCollection ],
     
   function( collection )
-    local full, A, field, A_op, quiver, arrows, labels, ambient_cat, reps, r, name, F;
+    local full, A, field, A_op, A_op_oid, quiver, arrows, labels, ambient_cat, reps, r, name, F;
     
     full := DefiningFullSubcategory( collection );
     
@@ -22,7 +22,9 @@ InstallMethod( HomFunctorAttr,
     
     field := LeftActingDomain( A );
     
-    A_op := OppositeAlgebra( A );
+    K_mat := MatrixCategory( field );
+    
+    A_op_oid := Algebroid( OppositeAlgebra( A ) );
     
     quiver := QuiverOfAlgebra( A );
     
@@ -45,7 +47,8 @@ InstallMethod( HomFunctorAttr,
     
     fi;
     
-    reps := CategoryOfQuiverRepresentations( A_op );
+    #reps := CategoryOfQuiverRepresentations( A_op );
+    reps := Hom( A_op_oid, K_mat );
     
     name := "Hom(T,-) functor";
           
@@ -101,8 +104,9 @@ InstallMethod( HomFunctorAttr,
           
           od;
           
-          Add( mats, MatrixByRows( field, [ dim_vec[ j ], dim_vec[ i ] ], current_mat ) );
-        
+          #Add( mats, MatrixByRows( field, [ dim_vec[ j ], dim_vec[ i ] ], current_mat ) );
+          Add( mats, HomalgMatrix( current_mat, dim_vec[ j ], dim_vec[ i ], field ) );
+          
         od;
         
         if not IsDenseList( dim_vec ) then
@@ -117,7 +121,8 @@ InstallMethod( HomFunctorAttr,
           
         fi;
         
-        r := QuiverRepresentation( A_op, dim_vec, mats );
+        #r := QuiverRepresentation( A_op, dim_vec, mats );
+        r := AsObjectInHomCategory( A_op_oid, dim_vec, mats );
         
         MakeImmutable( bases );
         
@@ -131,9 +136,11 @@ InstallMethod( HomFunctorAttr,
       function( r1, alpha, r2 )
         local dim_vec_1, dim_vec_2, bases_1, bases_2, mats, current_mat, rel, i, b;
         
-        dim_vec_1 := DimensionVector( r1 );
+        #dim_vec_1 := DimensionVector( r1 );
+        dim_vec_1 := List( ValuesOnAllObjects( r1 ), RankOfObject );
         
-        dim_vec_2 := DimensionVector( r2 );
+        #dim_vec_2 := DimensionVector( r2 );
+        dim_vec_2 := List( ValuesOnAllObjects( r2 ), RankOfObject );
         
         bases_1 := List( r1!.bases_of_vector_spaces, maps -> List( maps, map -> PreCompose( map, alpha ) ) );
         
@@ -157,11 +164,13 @@ InstallMethod( HomFunctorAttr,
           
           od;
           
-          Add( mats, MatrixByRows( field, [ dim_vec_1[ i ], dim_vec_2[ i ] ], current_mat ) );
-        
+          #Add( mats, MatrixByRows( field, [ dim_vec_1[ i ], dim_vec_2[ i ] ], current_mat ) );
+          Add( mats, HomalgMatrix( current_mat, dim_vec_1[ i ], dim_vec_2[ i ], field ) );
+          
         od;
         
-        return QuiverRepresentationHomomorphism( r1, r2, mats );
+        #return QuiverRepresentationHomomorphism( r1, r2, mats );
+        return AsMorphismInHomCategory( r1, mats, r2 );
         
     end );
     
