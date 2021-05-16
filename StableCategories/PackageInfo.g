@@ -70,13 +70,12 @@ PackageDoc := rec(
 
 Dependencies := rec(
   GAP := ">= 4.8",
-  NeededOtherPackages := [ [ "CAP", ">= 2021.03-01" ],
-                           [ "GAPDoc", ">= 1.5" ],
-                            #[ "TriangulatedCategories", ">= 2020.07.15" ],
-                            #[ "FrobeniusCategories", ">= 2019.12.06" ],
-                            [ "QuotientCategories", ">= 2020.07.05" ],
-                            #[ "FreydCategoriesForCAP", ">= 0" ]
-                          ],
+  NeededOtherPackages := [
+                          [ "CAP", ">= 2021.03-01" ],
+                          [ "GAPDoc", ">= 1.5" ],
+                          [ "TriangulatedCategories", ">= 2020.07.15" ],
+                          [ "QuotientCategories", ">= 2020.07.05" ],
+                        ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),
