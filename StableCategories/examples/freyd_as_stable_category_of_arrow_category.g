@@ -73,11 +73,14 @@ InstallMethod( CategoryOfArrows,
         obj_vals := ValuesOnAllObjects( F );
         
         mor := [
-                 MorphismBetweenDirectSums(
+                  MorphismBetweenDirectSums(
                       [
-                        [ ZeroMorphism( obj_vals[ 1 ], obj_vals[ 2 ] ), IdentityMorphism( obj_vals[ 1 ] ) ]
+                        [
+                          ZeroMorphism( obj_vals[ 1 ], obj_vals[ 2 ] ),
+                          IdentityMorphism( obj_vals[ 1 ] )
+                        ]
                       ]
-                   ),
+                  ),
                  IdentityMorphism( obj_vals[ 2 ] )
                ];
                 
