@@ -127,6 +127,32 @@ CAP_INTERNAL_INSTALL_ADDS_FROM_RECORD( STABLE_CATEGORIES_METHOD_NAME_RECORD );
 
 ########################
 #
+# convenience methods
+#
+########################
+
+##
+InstallMethod( LiftingMorphism,
+          [ IsCapCategoryMorphism ],
+  alpha -> LiftingMorphismWithGivenLiftingObjects(
+                LiftingObject( Source( alpha ) ),
+                alpha,
+                LiftingObject( Range( alpha ) )
+              )
+);
+
+##
+InstallMethod( ColiftingMorphism,
+          [ IsCapCategoryMorphism ],
+  alpha -> ColiftingMorphismWithGivenColiftingObjects(
+                ColiftingObject( Source( alpha ) ),
+                alpha,
+                ColiftingObject( Range( alpha ) )
+              )
+);
+
+########################
+#
 # category constructor
 #
 ########################
