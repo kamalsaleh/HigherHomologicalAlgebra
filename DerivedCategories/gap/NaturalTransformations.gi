@@ -6,7 +6,7 @@
 
 ##
 InstallMethod( UnitOfTensorHomAdjunction,
-          [ IsExceptionalCollection ],
+          [ IsStrongExceptionalCollection ],
           
   function( collection )
     local full, ambient_cat, HH, TT, D, k, name, nat;
@@ -101,7 +101,7 @@ end );
 
 ##
 InstallMethod( CounitOfTensorHomAdjunction,
-          [ IsExceptionalCollection ],
+          [ IsStrongExceptionalCollection ],
           
   function( collection )
     local full, ambient_cat, HH, TT, C, k, name, nat;
@@ -169,7 +169,7 @@ end );
 
 ##
 InstallMethod( UnitOfConvolutionReplacementAdjunction,
-          [ IsExceptionalCollection ],
+          [ IsStrongExceptionalCollection ],
           
   function( collection )
     local ambient_cat, F, G, name, nat;
@@ -194,7 +194,7 @@ end );
 
 ##
 InstallMethod( CounitOfConvolutionReplacementAdjunction,
-          [ IsExceptionalCollection ],
+          [ IsStrongExceptionalCollection ],
           
   function( collection )
     local ambient_cat, F, G, name, nat;
@@ -221,7 +221,7 @@ end );
 ## This method is for all objects, it uses the standard isomorphisms bellow
 ##
 InstallMethod( COMPUTE_ISOMORPHISM,
-        [ IsHomotopyCategoryObject, IsExceptionalCollection ],
+        [ IsHomotopyCategoryObject, IsStrongExceptionalCollection ],
         
   function( a, collection )
     local N, iota;
@@ -239,7 +239,7 @@ end );
 ## This method is for objects whose maximal exceptional shift is 0.
 ##
 InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
-        [ IsHomotopyCategoryObject, IsExceptionalCollection ],
+        [ IsHomotopyCategoryObject, IsStrongExceptionalCollection ],
         
   function( A, collection )
     local ambient_cat, complexes_cat, I, data, R, z_func, func;
@@ -288,7 +288,7 @@ InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
           uvw := ExactTriangle(
                     Shift( MorphismFromStandardConeObject( r_0 ), -1 ),
                     r_0,
-                    AdditiveInverseForMorphisms( MorphismIntoStandardConeObject( r_0 ) )
+                    AdditiveInverseForMorphisms( MorphismToStandardConeObject( r_0 ) )
                   );
                   
           j_1 := BackwardPostnikovSystemAt( R, 0 )^1;
@@ -338,7 +338,7 @@ end );
 ## This method is for objects whose maximal exceptional shift is 0.
 ##
 InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
-        [ IsHomotopyCategoryObject, IsExceptionalCollection ],
+        [ IsHomotopyCategoryObject, IsStrongExceptionalCollection ],
         
   function( A, collection )
     local ambient_cat, complexes_cat, I, data, R, z_func, func;
@@ -386,7 +386,7 @@ InstallMethodWithCache( COMPUTE_STANDARD_ISOMORPHISM,
           uvw := ExactTriangle(
                     Shift( MorphismFromStandardConeObject( r_0 ), -1 ),
                     r_0,
-                    AdditiveInverseForMorphisms( MorphismIntoStandardConeObject( r_0 ) )
+                    AdditiveInverseForMorphisms( MorphismToStandardConeObject( r_0 ) )
                   );
                   
           j_m1 := BackwardPostnikovSystemAt( R, 0 )^-1;
