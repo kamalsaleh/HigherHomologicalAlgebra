@@ -70,9 +70,16 @@ BindGlobal( "CREATE_ALGEBROID_OF_DIAGRAM",
     fi;
     
     vertices_latex := ListX( main_vertices_latex, [ l .. u ],
-                    { V, i } -> Concatenation( "{", V, "}^{", String( i ), "}" )
-                  );
- 
+                    function( V, i )
+                      if PositionSublist( V, "^" ) <> fail and V[ Length(V) ] = '}' then
+                        V := ShallowCopy(V);
+                        Remove( V, Length(V) );
+                        return Concatenation( "{", V, ",", String( i ), "}}" );
+                      else
+                        return Concatenation( "{", V, "}^{", String( i ), "}" );
+                      fi;
+                  end );
+    
     diffs := ListX( main_vertices, [ l .. u - 1 ],
                     { V, i } -> Concatenation(
                                       "d", V, "_", _StRiNg( i ),
@@ -106,8 +113,15 @@ BindGlobal( "CREATE_ALGEBROID_OF_DIAGRAM",
     fi;
 
     maps_latex := ListX( generating_maps_latex, [ l .. u ],
-                    { map, i } -> Concatenation( "{", map, "}^{", String( i ), "}" )
-                  );
+                    function( map, i )
+                      if PositionSublist( map, "^" ) <> fail and map[ Length(map) ] = '}' then
+                        map := ShallowCopy( map );
+                        Remove( map, Length(map) );
+                        return Concatenation( "{", map, ",", String( i ), "}}" );
+                      else
+                        return Concatenation( "{", map, "}^{", String( i ), "}" );
+                      fi;
+                  end );
     
     arrows := Concatenation( diffs, maps, extra_arrows );
         
@@ -363,8 +377,16 @@ BindGlobal( "MakeMorphismNullHomotopic",
       if IsBound( L[ 3 ] ) then
         
         extra_arrows_latex := List( [ lb .. ub ],
-                      i -> Concatenation( "{", L[ 3 ], "}^{", String( i ), "}" )
-                );
+                      function( i )
+                        local temp;
+                        if PositionSublist( L[ 3 ], "^" ) <> fail and L[3][ Length( L[3] ) ] = '}' then
+                          temp := ShallowCopy( L[3] );
+                          Remove( temp, Length( temp ) );
+                          return Concatenation( "{", temp, ",", String( i ), "}}" );
+                        else
+                          return Concatenation( "{", L[ 3 ], "}^{", String( i ), "}" );
+                        fi;
+                      end );
         
       else
         
@@ -449,46 +471,52 @@ InstallMethod( AlgebroidOfDiagramInHomotopyCategory,
     
 end );
 
-#bounds := [ -3, 3 ];
-#generating_maps_labels :=
-# [
-#       [ "a1", "A1", "A2" ],
-#       [ "a2", "A2", "A3" ],
-#       [ "a3", "A3", "A4" ],
-#       [ "b1", "B1", "B2" ],
-#       [ "b2", "B2", "B3" ],
-#       [ "b3", "B3", "B4" ],
-#       [ "phi1", "A1", "B1" ],
-#       [ "phi2", "A2", "B2" ],
-#       [ "phi3", "A3", "B3" ],
-#       [ "phi4", "A4", "B4" ],
-#       [ "h2", "A2", "B1" ],
-#       [ "h3", "A3", "B2" ],
-#       [ "h4", "A4", "B3" ]
-# ];
-#
-#pre_rels :=
-#    [
-#      [ "PreCompose(a1,a2)", "ha1" ],
-#      [ "PreCompose(a2,a3)", "ha2" ],
-#      [ "PreCompose(b1,b2)", "hb1" ],
-#      [ "PreCompose(b2,b3)", "hb2" ],
-#      
-#      [ "PreCompose(a1,phi2)-PreCompose(phi1,b1)", "s1" ],
-#      [ "PreCompose(a2,phi3)-PreCompose(phi2,b2)", "s2" ],
-#      [ "PreCompose(a3,phi4)-PreCompose(phi3,b3)", "s3" ],
-#      
-#      [ "PreCompose(a1,h2)-phi1", "t1" ],
-#      [ "PreCompose(a2,h3)+PreCompose(h2,b1)-phi2", "t2" ],
-#      [ "PreCompose(a3,h4)+PreCompose(h3,b2)-phi3", "t3" ],
-#      [ "PreCompose(h4,b3)-phi4", "t4" ],
-#      
-#    ];
-#
-#other_rels :=
-#  [
-#    [
-#      [ "BasisOfExternalHom( Shift( A1, 1 ), B2 )[1]", "x" ],
-#      [ "BasisOfExternalHom( Shift( A3, 1 ), B4 )[1]", "y" ]
-#    ]
-#  ];
+bounds := [ -3, 3 ];
+
+o := [ "A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4" ];
+olatex := [ "A_1", "A_2", "A_3", "A_4", "B_1", "B_2", "B_3", "B_4" ];
+
+m :=
+ [
+       [ "a1", "A1", "A2" ],
+       [ "a2", "A2", "A3" ],
+       [ "a3", "A3", "A4" ],
+       [ "b1", "B1", "B2" ],
+       [ "b2", "B2", "B3" ],
+       [ "b3", "B3", "B4" ],
+       [ "phi1", "A1", "B1" ],
+       [ "phi2", "A2", "B2" ],
+       [ "phi3", "A3", "B3" ],
+       [ "phi4", "A4", "B4" ],
+       [ "h2", "A2", "B1" ],
+       [ "h3", "A3", "B2" ],
+       [ "h4", "A4", "B3" ]
+ ];
+
+mlatex := [ "\\alpha_1", "\\alpha_2", "\\alpha_3", "\\beta_1", "\\beta_2", "\\beta_3", "\\phi_1", "\\phi_2", "\\phi_3", "\\phi_4", "h_2", "h_3", "h_4" ];
+
+pre_rels :=
+    [
+      [ "PreCompose(a1,a2)", "ha1" ],
+      [ "PreCompose(a2,a3)", "ha2" ],
+      [ "PreCompose(b1,b2)", "hb1" ],
+      [ "PreCompose(b2,b3)", "hb2" ],
+      
+      [ "PreCompose(a1,phi2)-PreCompose(phi1,b1)", "s_1" ],
+      [ "PreCompose(a2,phi3)-PreCompose(phi2,b2)", "s_2" ],
+      [ "PreCompose(a3,phi4)-PreCompose(phi3,b3)", "s_3" ],
+      
+      [ "PreCompose(a1,h2)-phi1", "t_1" ],
+      [ "PreCompose(a2,h3)+PreCompose(h2,b1)-phi2", "t_2" ],
+      [ "PreCompose(a3,h4)+PreCompose(h3,b2)-phi3", "t_3" ],
+      [ "PreCompose(h4,b3)-phi4", "t_4" ],
+      
+    ];
+
+other_rels :=
+  [
+    [
+      [ "BasisOfExternalHom( Shift( A1, 1 ), B2 )[1]", "x" ],
+      [ "BasisOfExternalHom( Shift( A3, 1 ), B4 )[1]", "y" ]
+    ]
+  ];
