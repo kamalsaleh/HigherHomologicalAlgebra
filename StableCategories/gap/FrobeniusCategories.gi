@@ -77,23 +77,59 @@ installation_name := "IsConflationPair",
 filter_list := [ "category", "morphism", "morphism" ],
 return_type := "bool" ),
 
-CompleteInflationToConflation := rec(
-installation_name := "CompleteInflationToConflation",
+CokernelObjectOfInflation := rec(
+installation_name := "CokernelObjectOfInflation",
+filter_list := [ "category", "morphism" ],
+return_type := "object" ),
+
+CokernelProjectionOfInflation := rec(
+installation_name := "CokernelProjectionOfInflation",
+io_type := [ [ "iota" ], [ "iota_range", "K" ] ],
+with_given_object_position := "Range",
+universal_type := "Colimit",
 filter_list := [ "category", "morphism" ],
 return_type := "morphism" ),
 
-CompleteDeflationToConflation := rec(
-installation_name := "CompleteDeflationToConflation",
-filter_list := [ "category", "morphism" ],
+CokernelProjectionOfInflationWithGivenCokernelObjectOfInflation := rec(
+installation_name := "CokernelProjectionOfInflationWithGivenCokernelObjectOfInflation",
+filter_list := [ "category", "morphism", "object" ],
 return_type := "morphism" ),
 
-LiftAlongInflation := rec(
-installation_name := "LiftAlongInflation",
+ColiftAlongCokernelProjectionOfInflation := rec(
+installation_name := "ColiftAlongCokernelProjectionOfInflation",
 filter_list := [ "category", "morphism", "morphism" ],
 return_type := "morphism" ),
 
 ColiftAlongDeflation := rec(
 installation_name := "ColiftAlongDeflation",
+filter_list := [ "category", "morphism", "morphism" ],
+return_type := "morphism" ),
+
+KernelObjectOfDeflation := rec(
+installation_name := "KernelObjectOfDeflation",
+filter_list := [ "category", "morphism" ],
+return_type := "object" ),
+
+KernelEmbeddingOfDeflation := rec(
+installation_name := "KernelEmbeddingOfDeflation",
+io_type := [ [ "iota" ], [ "K", "iota_source" ] ],
+with_given_object_position := "Source",
+universal_type := "Limit",
+filter_list := [ "category", "morphism" ],
+return_type := "morphism" ),
+
+KernelEmbeddingOfDeflationWithGivenKernelObjectOfDeflation := rec(
+installation_name := "KernelEmbeddingOfDeflationWithGivenKernelObjectOfDeflation",
+filter_list := [ "category", "morphism", "object" ],
+return_type := "morphism" ),
+
+LiftAlongKernelEmbeddingOfDeflation := rec(
+installation_name := "LiftAlongKernelEmbeddingOfDeflation",
+filter_list := [ "category", "morphism", "morphism" ],
+return_type := "morphism" ),
+
+LiftAlongInflation := rec(
+installation_name := "LiftAlongInflation",
 filter_list := [ "category", "morphism", "morphism" ],
 return_type := "morphism" ),
 
@@ -118,7 +154,15 @@ UniversalMorphismIntoExactFiberProduct:= rec(
 
 installation_name := "UniversalMorphismIntoExactFiberProduct",
 filter_list := [ "category", "morphism", "morphism", "morphism", "morphism" ],
+with_given_object_position := "Range",
 return_type := "morphism" ),
+
+UniversalMorphismIntoExactFiberProductWithGivenExactFiberProduct := rec(
+
+installation_name := "UniversalMorphismIntoExactFiberProductWithGivenExactFiberProduct",
+filter_list := [ "category", "morphism", "morphism", "morphism", "morphism", "object" ],
+return_type := "morphism" ),
+
 
 ExactPushout:= rec(
 
@@ -138,10 +182,17 @@ installation_name := "InjectionOfSecondCofactorOfExactPushout",
 filter_list := [ "category", "morphism", "morphism" ],
 return_type := "morphism" ),
 
-UniversalMorphismFromExactPushout:= rec(
+UniversalMorphismFromExactPushout := rec(
 
 installation_name := "UniversalMorphismFromExactPushout",
 filter_list := [ "category", "morphism", "morphism", "morphism", "morphism" ],
+with_given_object_position := "Source",
+return_type := "morphism" ),
+
+UniversalMorphismFromExactPushoutWithGivenExactPushout := rec(
+
+installation_name := "UniversalMorphismFromExactPushoutWithGivenExactPushout",
+filter_list := [ "category", "morphism", "morphism", "morphism", "morphism", "object" ],
 return_type := "morphism" ),
 
 IsExactProjectiveObject := rec(

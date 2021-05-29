@@ -20,6 +20,11 @@ AutoDoc( rec(
     gapdoc := rec(
         LaTeXOptions := rec(
             LateExtraPreamble := """
+            \usepackage{ mathrsfs }
+            \usepackage{tikz-cd}
+            \newcommand{\comp}[2]{#1 \cdot #2}
+            \newcommand{\CC}{\mathscr{C}}
+            \newcommand{\EE}{\mathcal{E}}
             """,
         ),
     ),
