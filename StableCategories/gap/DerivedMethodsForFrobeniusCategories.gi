@@ -22,10 +22,12 @@ AddFinalDerivation( IsConflationPair,
                     ],
                     [
                       IsConflationPair,
-                      CokernelProjectionWithGivenCokernelObject,
-                      KernelEmbeddingWithGivenKernelObject,
-                      LiftAlongKernelEmbeddingOfDeflation,
-                      ColiftAlongCokernelProjectionOfInflation,
+                      ExactKernelObject,
+                      ExactKernelEmbedding,
+                      ExactKernelLift,
+                      ExactCokernelObject,
+                      ExactCokernelProjection,
+                      ExactCokernelColift,
                       ExactFiberProduct,
                       ProjectionInFirstFactorOfExactFiberProduct,
                       ProjectionInSecondFactorOfExactFiberProduct,
@@ -40,18 +42,18 @@ AddFinalDerivation( IsConflationPair,
       IsIsomorphism( KernelLift( pi, iota ) )
         and IsIsomorphism( CokernelColift( iota, pi ) ),
 [ 
-  KernelObjectOfDeflation,
+  ExactKernelObject,
     { cat, pi } -> KernelObject( cat, pi )
 ],
 [
-  KernelEmbeddingOfDeflation,
+  ExactKernelEmbedding,
     { cat, pi } -> KernelEmbedding( cat, pi ) 
 ],
-[ KernelEmbeddingOfDeflationWithGivenKernelObjectOfDeflation,
+[ ExactKernelEmbeddingWithGivenExactKernelObject,
     { cat, pi, ker } -> KernelEmbeddingWithGivenKernelObject( cat, pi, ker )
 ],
 [
-  LiftAlongKernelEmbeddingOfDeflation,
+  ExactKernelLift,
     { cat, pi, tau } -> KernelLift( cat, pi, tau )
 ],
 [
@@ -59,19 +61,19 @@ AddFinalDerivation( IsConflationPair,
     { cat, iota, tau } -> LiftAlongMonomorphism( cat, iota, tau )
 ],
 [
-  CokernelObjectOfInflation,
+  ExactCokernelObject,
     { cat, iota } -> CokernelObject( cat, iota )
 ],
 [
-  CokernelProjectionOfInflation,
+  ExactCokernelProjection,
     { cat, iota } -> CokernelProjection( cat, iota )
 ],
 [
-  CokernelProjectionOfInflationWithGivenCokernelObjectOfInflation,
+  ExactCokernelProjectionWithGivenExactCokernelObject,
     { cat, iota, coker } -> CokernelProjectionWithGivenCokernelObject( cat, iota, coker )
 ],
 [
-  ColiftAlongCokernelProjectionOfInflation,
+  ExactCokernelColift,
     { cat, iota, tau } -> CokernelColift( cat, iota, tau )
 ],
 [
