@@ -314,7 +314,21 @@ IsFrobeniusCategory( Grmod_E );
 #? true
 #? @EndExample
 
-#! @Chunk freyd_categories_graded_exterior_algebra-lifting-system
+#! @Chunk LNr1U3TyLS1Gj3vHSzvh
+#!  
+#!  Let $(\CC,\EE)$ is an exact category with enough $\EE$-projective objects. For any object $A$, there exists a deflation $p_A:P_A \to A$ from some $\EE$-projective object $P_A$.
+#!  We define $\LL$ by the class of all $\EE$-projective objects in $\CC$.
+#!  For an object $A$ in $\CC$, we define the the distinguished object $L_A$ by $P_A$ and the distinguished morphism $\ell_A:L_A\to A$ by $p_A:P_A \to A$.
+#!  If $A$ happens to be an $\EE$-projective object, then $\ell_A$ is a split-epimorphism and its section morphism $s_A:A \to L_A$ is given by the $\EE$-projective lift
+#!  of $\id_A$ along the deflation $\ell_A$.
+#!  For a morphism $\alpha: A \to B$, we define $L_\alpha:L_A \to L_B$ by the $\EE$-projective lift of $\comp{\ell_A}{\alpha}$ along the deflation $\ell_B$.
+#! 
+#!  Every abelian category $\CC$ is exact with respect to the class $\EE$ of **all** short exact sequences in $\CC$.
+#!  The fact that in abelian categories every monomorphism is a kernel of its
+#!  cokernel and every epimorphism is a cokernel of its kernel implies that
+#!  a morphism in this category is an inflation if and only if it is a monomorphism; and is a deflation if and only if it is an epimorphism.
+#!  It also implies that an object in $\CC$ is $\EE$-injective if and only if it is injective in the usual sense, and
+#!  is $\EE$-projective if and only if it is projective in the usual sense.
 
 #! @Example
 alpha := mu;
@@ -349,7 +363,17 @@ IsCongruentForMorphisms( PreCompose( lambda, ell_B ), alpha );
 #! @EndExample
 
 #! @Chunk freyd_categories_graded_exterior_algebra-colifting-system
-
+#!  
+#!  Let $(\CC,\EE)$ is an exact category with enough $\EE$-injective objects. That is, for any object $A$, there exists an inflation $\iota_A:A \to I_A$ 
+#!  into some $\EE$-injective object $I_A$.
+#!  We define $\QQ$ by the class of all $\EE$-injective objects in $\CC$.
+#!  For an object $A$ in $\CC$, we define the the distinguished object $Q_A$ by $I_A$ and the distinguished morphism $q_A:A\to Q_A$ by $\iota_A:A \to I_A$.
+#!  If $A$ happens to be an $\EE$-injective object, then $q_A$ is a split-monomorphism and its retraction morphism $r_A:Q_A \to A$ is given by the $\EE$-injective colift
+#!  of $\id_A$ along the inflation $q_A$.
+#!  For a morphism $\alpha: A \to B$, we define $Q_\alpha:Q_A\to Q_B$ by the $\EE$-injective colift of $\comp{\alpha}{q_B}$ along the inflation $q_A$.
+#!
+#!  For instance, the class of all injective objects in an abelian category with enough injective objects defines a system of colifting objects. 
+#! @LatexOnly See section \ref{Section_LNr1U3TyLS1Gj3vHSzvh} for further details.
 #! @Example
 alpha := mu;
 #! <A morphism in Category of f.p. graded left modules over Q{e0,e1}

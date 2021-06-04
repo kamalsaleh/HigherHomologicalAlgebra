@@ -216,24 +216,11 @@ DeclareOperation( "AddWitnessForBeingLiftableAlongMorphismFromLiftingObject",
 DeclareOperation( "AddWitnessForBeingLiftableAlongMorphismFromLiftingObject",
                   [ IsCapCategory, IsList ] );
 
-#! @Section Examples for systems of lifting objects
-#! @SectionLabel efsolo
-#!  
-#!  Let $(\CC,\EE)$ is an exact category with enough $\EE$-projective objects. For any object $A$, there exists a deflation $p_A:P_A \to A$ from some $\EE$-projective object $P_A$.
-#!  We define $\LL$ by the class of all $\EE$-projective objects in $\CC$.
-#!  For an object $A$ in $\CC$, we define the the distinguished object $L_A$ by $P_A$ and the distinguished morphism $\ell_A:L_A\to A$ by $p_A:P_A \to A$.
-#!  If $A$ happens to be an $\EE$-projective object, then $\ell_A$ is a split-epimorphism and its section morphism $s_A:A \to L_A$ is given by the $\EE$-projective lift
-#!  of $\id_A$ along the deflation $\ell_A$.
-#!  For a morphism $\alpha: A \to B$, we define $L_\alpha:L_A \to L_B$ by the $\EE$-projective lift of $\comp{\ell_A}{\alpha}$ along the deflation $\ell_B$.
-#! 
-#!  Every abelian category $\CC$ is exact with respect to the class $\EE$ of **all** short exact sequences in $\CC$.
-#!  The fact that in abelian categories every monomorphism is a kernel of its
-#!  cokernel and every epimorphism is a cokernel of its kernel implies that
-#!  a morphism in this category is an inflation if and only if it is a monomorphism; and is a deflation if and only if it is an epimorphism.
-#!  It also implies that an object in $\CC$ is $\EE$-injective if and only if it is injective in the usual sense, and
-#!  is $\EE$-projective if and only if it is projective in the usual sense.
 
-#! @InsertChunk freyd_categories_graded_exterior_algebra-lifting-system
+#! @Section Examples for systems of lifting objects
+#! @SectionLabel LNr1U3TyLS1Gj3vHSzvh
+#! @InsertChunk LNr1U3TyLS1Gj3vHSzvh
+
 
 #! @Section Systems of colifting objects
 #! 
@@ -449,78 +436,24 @@ DeclareOperation( "AddWitnessForBeingColiftableAlongMorphismToColiftingObject",
 #! @Section Examples for systems of colifting objects
 
 #! @Subsection The class of E-injective objects in exact categories with enough E-injectives
-#!  
-#!  Let $(\CC,\EE)$ is an exact category with enough $\EE$-injective objects. That is, for any object $A$, there exists an inflation $\iota_A:A \to I_A$ into some $\EE$-injective object $I_A$.
-#!  We define $\QQ$ by the class of all $\EE$-injective objects in $\CC$.
-#!  For an object $A$ in $\CC$, we define the the distinguished object $Q_A$ by $I_A$ and the distinguished morphism $q_A:A\to Q_A$ by $\iota_A:A \to I_A$.
-#!  If $A$ happens to be an $\EE$-injective object, then $q_A$ is a split-monomorphism and its retraction morphism $r_A:Q_A \to A$ is given by the $\EE$-injective colift
-#!  of $\id_A$ along the inflation $q_A$.
-#!  For a morphism $\alpha: A \to B$, we define $Q_\alpha:Q_A\to Q_B$ by the $\EE$-injective colift of $\comp{\alpha}{q_B}$ along the inflation $q_A$.
-#!
-#!  For instance, the class of all injective objects in an abelian category with enough injective objects defines a system of colifting objects. 
-#!  @LatexOnly See Section \ref{Section_efsolo} for further details.
-
+#! @SubsectionLabel fcgeacs
 #! @InsertChunk freyd_categories_graded_exterior_algebra-colifting-system
 
 #! @Subsection The class of all objects in arrows categories represented by split-epimorphisms
-#!
-#! Let $\CC$ be an additive category and $\mathrm{Arr}(\CC)$ its category of arrows, i.e.,
-#! its objects are morphisms in $\CC$ and its morphisms are commutative squars in $\CC$.
-#! The class $\QQ$ of all objects in $\mathrm{Arr}(\CC)$ that are represented by split-epimorphisms defines a system of colifting objects in $\mathrm{Arr}(\CC)$.
-#! For an object $A=(\alpha:A_1 \to A_2)$ in $\mathrm{Arr}(\CC)$, we define $Q_A$ by
-#! @LatexOnly $\bigl(\bigl(\begin{smallmatrix} \alpha \\ \id_{A_2}\end{smallmatrix}\bigr): A_1 \oplus A_2 \to A_2\bigr)$
-#! and $q_A: A \to Q_A$ by the commutative square whose legs are
-#! @LatexOnly $\bigl(\begin{smallmatrix} \id_{A_1} & 0\end{smallmatrix}\bigr): A_1 \to A_1 \oplus A_2$
-#! and $\id_{A_2}:A_2 \to A_2$.
-#! @BeginLatexOnly
-#! \begin{center}
-#! \begin{tikzcd}[ampersand replacement=\&]
-#! A \arrow[d, "q_A"] \& A_1 \arrow[r, "\alpha"] \arrow[d, "{\bigl(\begin{smallmatrix}\mathrm{id}_{A_1} & 0 \end{smallmatrix}\bigr)}"', hook] \& A_2 \arrow[d, "\mathrm{id}_{A_2}", hook] \\
-#! Q_A                \& A_1 \oplus A_2 \arrow[r, "{\bigl(\begin{smallmatrix}\alpha \\ \mathrm{id}_{A_2} \end{smallmatrix}\bigr)}"']          \& \phantom{.}A_2.
-#! \end{tikzcd}
-#! \end{center}
-#! @EndLatexOnly
-#!
-#! If $A$ belong to $\QQ$, then $\alpha:A_1 \to A_2$ is a split-epimorphism and it has a section morphism is $\gamma: A_2 \to A_1$. In this case $q_A$ is a split-monomorphism and its retraction morphism is given by the commutative square
-#! @BeginLatexOnly
-#! \begin{center}
-#! \begin{tikzcd}[ampersand replacement=\&]
-#! A                    \& A_1 \arrow[r, "\alpha"]                                                                                                                                                                                 \& A_2                                 \\
-#! Q_A \arrow[u, "r_A"] \& A_1 \oplus A_2 \arrow[u, "{\bigl(\begin{smallmatrix}\mathrm{id}_{A_1} \\ \gamma \end{smallmatrix}\bigr)}"] \arrow[r, "{\bigl(\begin{smallmatrix}\alpha \\ \mathrm{id}_{A_2} \end{smallmatrix}\bigr)}"'] \& \phantom{.}A_2. \arrow[u, "\mathrm{id}_{A_2}"']
-#! \end{tikzcd}
-#! \end{center}
-#! @EndLatexOnly
+#! @SubsectionLabel RQztP14RWWSvFYPgkHbn
+#! @InsertChunk RQztP14RWWSvFYPgkHbn
 
-#! Let $B=(\beta:B_1 \to B_2)$ be an object in $\mathrm{Arr}(\CC)$ and $\varphi: A \to B$ be a morphism defined by a commutative square
-#! @BeginLatexOnly
-#! \begin{center}
-#! \begin{tikzcd}
-#! A \arrow[d, "\varphi"'] & A_1 \arrow[r, "\alpha"] \arrow[d, "\varphi_1"'] & A_2 \arrow[d, "\varphi_2"] \\
-#! B                       & B_1 \arrow[r, "\beta"']                         & B_2. 
-#! \end{tikzcd}
-#! \end{center}
-#! @EndLatexOnly
-#! We define $Q_{\varphi}: Q_A \to Q_B$ by the commutative square
-#! @BeginLatexOnly
-#! \begin{center}
-#! \begin{tikzcd}[ampersand replacement=\&]
-#! Q_A \arrow[d, "Q_\varphi"'] \& A_1 \oplus A_2 \arrow[r, "{\bigl(\begin{smallmatrix}\alpha \\ \mathrm{id}_{A_2} \end{smallmatrix}\bigr)}"] \arrow[d, "{\bigl(\begin{smallmatrix}\varphi_1 & 0 \\ 0 & \varphi_2 \end{smallmatrix}\bigr)}"'] \& A_2 \arrow[d, "\varphi_2"] \\
-#! Q_B                         \& B_1 \oplus B_2 \arrow[r, "{\bigl(\begin{smallmatrix}\beta \\ \mathrm{id}_{B_2} \end{smallmatrix}\bigr)}"']                                                                                                 \& \phantom{.}B_2                      . 
-#! \end{tikzcd}
-#! \end{center}
-#! @EndLatexOnly
-#!
+#! @Subsection Code example 1
+#! @SubsectionLabel NVqCpmp6ccYzEKjwZX5B
+#! @InsertChunk NVqCpmp6ccYzEKjwZX5B
 
-#! The arrows category $\mathrm{Arr}(\CC)$ is isomorphic to the category of functors $\mathrm{Hom}(1\to 2,\CC)$, where $1 \to 2$ is the interval category which is the $\mathbb{Z}$-linear
-#! closure of the quiver consisting of two vertices $v_1,v_2$ and an arrow $m:v_1\to v_2$.
+#! @Subsection The class of all contractible objects in complexes categories
+#! @SubsectionLabel sIwHy5MWWYHC74TAiWwI
+#! @InsertChunk sIwHy5MWWYHC74TAiWwI
 
-#!
-#! The following function takes and additive category $\CC$ and constructs its arrows category $\mathrm{Arr}(\CC)$ and equipps it with the above system of colifting objects.
-#! It requires the &GAP; package
-#! @LatexOnly \cite[FunctorCategories]{FunctorCategories2021.05-01}.
-#!
-#! @InsertChunk category_of_arrows_method
-#! @InsertChunk category_of_arrows_of_additive_closure_of_algeboid
+#! @Subsection Code example 2
+#! @SubsectionLabel jdHNiWHD10h0jRZTnnH6
+#! @InsertChunk jdHNiWHD10h0jRZTnnH6
 
 #! @Chapter Stable Categories
 #! @Section GAP categories
@@ -618,7 +551,7 @@ DeclareAttribute( UnderlyingCell, IsStableCategoryMorphism );
 fi;
 
 
-#! @Section Example for a stable category
+#! @Subsection Code example
 #! @InsertChunk stable_cat_by_projectives
 
 #! @Section Stable categories defined by systems of lifting objects
@@ -637,6 +570,8 @@ fi;
 #! @Returns a stable category
 DeclareAttribute( "StableCategoryBySystemOfLiftingObjects", IsCapCategory );
 
+#! @Subsection Code example
+#! @SubsectionLabel scbpalo
 #! @InsertChunk stable_cat_by_projectives_as_lifting_objects
 
 #! @Section Stable categories defined by systems of colifting objects
@@ -653,6 +588,20 @@ DeclareAttribute( "StableCategoryBySystemOfLiftingObjects", IsCapCategory );
 #! @Arguments category
 #! @Returns a stable category
 DeclareAttribute( "StableCategoryBySystemOfColiftingObjects", IsCapCategory );
+
+#! @Subsection Code example 1
+#! @SubsectionLabel YlKk3B5n4Q15dKo81eOJ
+#! @InsertChunk YlKk3B5n4Q15dKo81eOJ
+
+#! @Subsection Code example 2
+#! @SubsectionLabel 625C968E2GmBN9Gh2bLI 
+#! @InsertChunk 625C968E2GmBN9Gh2bLI
+
+#####################
+#
+# Global functions
+#
+#####################
 
 DeclareGlobalFunction( "ADD_HOMOMORPHISM_STRUCTURE_TO_STABLE_CATEGORY_BY_COLIFTING_STRUCTURE_WITH_ABELIAN_RANGE_CAT" );
 

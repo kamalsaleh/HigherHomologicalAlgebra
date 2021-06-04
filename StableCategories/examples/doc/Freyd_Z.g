@@ -46,7 +46,7 @@ HasRangeCategoryOfHomomorphismStructure( ZZ_mod_by_projs );
 
 #! 
 #!  We found earlier
-#!  @LatexOnly in Section \ref{Section_efsolo}
+#!  @LatexOnly in section \ref{Section_LNr1U3TyLS1Gj3vHSzvh}
 #!  that the class of all $\EE$-projective objects in any exact category $(\CC,\EE)$ defines a system of lifting objects.
 #!  Let us illustrate this for the category of finitely presented $\mathbb{Z}$-modules.
 

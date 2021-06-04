@@ -1459,6 +1459,13 @@ InstallMethod( IsExact,
 end );
 
 ##
+InstallMethod( IsContractable,
+          [ IsChainOrCochainComplex ],
+           
+  C -> IsNullHomotopic( IdentityMorphism( C ) )
+);
+
+##
 InstallMethod( CohomologySupport, 
           [ IsCochainComplex, IsInt, IsInt ],
   function( C, m, n )

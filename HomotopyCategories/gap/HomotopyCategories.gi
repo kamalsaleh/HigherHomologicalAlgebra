@@ -56,17 +56,17 @@ InstallMethod( HomotopyCategoryByCochains,
 InstallMethod( HomotopyCategoryOp,
       [ IsCapCategory, IsBool ],
   function( cat, over_cochains )
-    local complex_cat, bullet, coliftable_function, name, to_be_finalized, special_filters, homotopy_category, r;
+    local complex_cat, bullet, coliftable_function, name, finalize, special_filters, homotopy_category, r;
     
     if over_cochains then
       
-      complex_cat := CochainComplexCategory( cat : FinalizeCategory := false );
-      bullet := "^•"; #"^●";
+      complex_cat := CochainComplexCategory( cat );
+      bullet := "^•";
       
     else
       
-      complex_cat := ChainComplexCategory( cat : FinalizeCategory := false );
-      bullet := ""; #"_•";
+      complex_cat := ChainComplexCategory( cat );
+      bullet := "";
 
     fi;
     
@@ -75,41 +75,18 @@ InstallMethod( HomotopyCategoryOp,
       Error( "The input category should be at least additive category" );
       
     fi;
-    
-    if HasIsFinalized( complex_cat ) then
       
-      if not CanCompute( complex_cat, "MorphismToColiftingObject" ) or
-          not CanCompute( complex_cat, "IsColiftableAlongMorphismToColiftingObject" ) then
-          
-          Error( "The complex category seems to have been finalized without adding colifting structure" );
-          
-      fi;
-      
-    else
-      
-      coliftable_function := ValueOption( "is_coliftable_through_colifting_object_func" );
-      
-      if IsFunction( coliftable_function ) then
-        
-        AddIsColiftableAlongMorphismToColiftingObject( complex_cat, coliftable_function );
-        
-      fi;
-      
-      Finalize( complex_cat );
-      
-      if not CanCompute( complex_cat, "IsColiftableAlongMorphismToColiftingObject" ) then
+    if not CanCompute( complex_cat, "IsColiftableAlongMorphismToColiftingObject" ) then
         
         Error( "The method IsColiftableAlongMorphismToColiftingObject should be added to the category of chains!" );
         
-      fi;
-       
     fi;
     
     r := RandomTextColor( Name( cat ) );
      
     name := Concatenation( r[ 1 ], "Homotopy", bullet, " category( ", r[ 2 ],  Name( cat ), r[ 1 ], " )", r[ 2 ] );
     
-    to_be_finalized := ValueOption( "FinalizeCategory" );
+    finalize := ValueOption( "FinalizeCategory" );
     
     special_filters := ValueOption( "SpecialFilters" );
     
@@ -150,7 +127,7 @@ InstallMethod( HomotopyCategoryOp,
         
     fi;
     
-    if to_be_finalized = false then
+    if finalize = false then
       
       return homotopy_category;
       
