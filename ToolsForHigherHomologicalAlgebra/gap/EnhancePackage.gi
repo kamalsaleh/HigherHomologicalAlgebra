@@ -11,8 +11,8 @@ InstallValue( LIST_OF_ENHANCABLE_PACKAGES,
     "RingsForHomalg",
     "GradedRingForHomalg",
     "FreydCategoriesForCAP",
-    "ModulePresentationsForCAP",
-    "GradedModulePresentationsForCAP",
+    #"ModulePresentationsForCAP",
+    #"GradedModulePresentationsForCAP",
     "Algebroids",
     "FunctorCategories"
   ]
