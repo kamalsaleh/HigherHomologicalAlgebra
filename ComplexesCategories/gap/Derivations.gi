@@ -31,7 +31,7 @@ AddDerivationToCAP( HomotopyMorphisms,
                 [
                     #[ IdentityMorphism, 1 ] # this should be modified!
                 ],
-  function( cat, phi )
+   function( cat, phi )
     local A, B, m, n, L, K, b, sol, H;
     
     A := Source( phi );
