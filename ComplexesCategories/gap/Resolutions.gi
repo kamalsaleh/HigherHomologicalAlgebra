@@ -187,6 +187,8 @@ InstallMethod( MorphismBetweenProjectiveResolutions,
           
           ep_D := EpimorphismFromSomeProjectiveObject( Range( kappa ) );
           
+          Assert( 3, IsEpimorphism( ep_D ) );
+          
           return ProjectiveLift( PreCompose( ep_C, kappa ), ep_D );
          
          fi;
@@ -502,7 +504,7 @@ InstallMethod( MorphismBetweenProjectiveResolutions,
        [ IsCapCategoryMorphism ],
        
   function( phi )
-    local cat, P, Q, func, maps, temp;
+    local cat, S, R, pS, pR, z, P, Q;
     
     if IsChainOrCochainMorphism( phi ) then
       
@@ -512,42 +514,58 @@ InstallMethod( MorphismBetweenProjectiveResolutions,
     
     cat := CapCategory( phi );
     
-    if not IsAbelianCategoryWithComputableEnoughProjectives( cat ) then 
+    if not IsAbelianCategoryWithComputableEnoughProjectives( cat ) then
       
       Error( "The category must be abelian with computable enough projectives" );
       
     fi;
     
-    P := ProjectiveResolution( Source( phi ) );
+    S := Source( phi );
+    R := Range( phi );
     
-    Q := ProjectiveResolution( Range( phi ) );
+    pS := EpimorphismFromSomeProjectiveObject( S );
+    pR := EpimorphismFromSomeProjectiveObject( R );
     
-    temp := rec(  );
+    P := ProjectiveResolution( S );
+    Q := ProjectiveResolution( R );
     
-    func := function( i )
-              local a, b, c;
+    z := AsZFunction(
+            function( i )
+              local eta, epi;
+              
               if i > 0 then
-                c := ZeroMorphism( P[i], Q[i] );
+                
+                return ZeroMorphism( P[i], Q[i] );
+                
               elif i = 0 then
-                a := PreCompose( EpimorphismFromSomeProjectiveObject( Source( phi ) ), phi );
-                b := EpimorphismFromSomeProjectiveObject( Range( phi ) );
-                c := ProjectiveLift( a, b );
+                
+                return ProjectiveLift( PreCompose( pS, phi ), pR );
+                
+              elif i = -1 then
+                
+                eta := KernelLift( pR, PreCompose( P^(-1), z[0] ) );
+                
+                epi := KernelLift( pR, Q^(-1) );
+                
+                Assert( 3, IsEpimorphism( epi ) );
+                
+                return ProjectiveLift( eta, epi );
+               
               else
-                if IsBound( temp!.( i + 1 ) ) then
-                  a := KernelLift( Q^( i+1 ), PreCompose( P^i, temp!.( i + 1 ) ) );
-                else
-                  a := KernelLift( Q^( i+1 ), PreCompose( P^i, func( i + 1 ) ) );
-                fi;
-                b := KernelLift( Q^( i+1 ), Q^i );
-                c := ProjectiveLift( a, b );
+                
+                eta := KernelLift( Q^( i+1 ), PreCompose( P^i, z[i+1] ) );
+                
+                epi := KernelLift( Q^( i+1 ), Q^i );
+                
+                Assert( 3, IsEpimorphism( epi ) );
+                
+                return ProjectiveLift( eta, epi );
+                
               fi;
-              temp!.( String( i ) ) := c;
-              return c;
-            end;
             
-    maps := AsZFunction( func );
+            end );
     
-    return CochainMorphism( P, Q, maps );
+    return CochainMorphism( P, Q, z );
     
 end );
 
@@ -609,7 +627,7 @@ InstallMethod( MorphismBetweenProjectiveChainResolutions,
     fi;
     
     return AsChainMorphism( MorphismBetweenProjectiveResolutions( phi ) );
-     
+    
 end );
 
 ##
@@ -1125,12 +1143,12 @@ InstallOtherMethod( InjectiveCochainResolution,
 );
 
 
-# TODO
+##
 InstallMethod( MorphismBetweenInjectiveResolutions,
           [ IsCapCategoryMorphism ],
           
   function( phi )
-    local cat, P, Q, func, maps, temp;
+    local cat, S, R, iS, iR, P, Q, z;
     
     if IsChainOrCochainMorphism( phi ) then
       
@@ -1146,55 +1164,52 @@ InstallMethod( MorphismBetweenInjectiveResolutions,
       
     fi;
     
-    P := InjectiveResolution( Source( phi ) );
+    S := Source( phi );
+    R := Range( phi );
     
+    iS := MonomorphismIntoSomeInjectiveObject( S );
+    iR := MonomorphismIntoSomeInjectiveObject( R );
+    
+    P := InjectiveResolution( Source( phi ) );
     Q := InjectiveResolution( Range( phi ) );
     
-    temp := rec(  );
-    
-    func :=
+    z := AsZFunction(
       function( i )
-         local a, b, c;
+        local eta, mono;
+        
+        if i < 0 then
+          
+          return ZeroMorphism( P[i], Q[i] );
+          
+        elif i = 0 then
+          
+          return InjectiveColift( iS, PreCompose( phi, iR ) );
+          
+        elif i = 1 then
+          
+          eta := CokernelColift( iS, PreCompose( z[0], Q^0  ) );
+          
+          mono := CokernelColift( iS, P^0 );
+          
+          Assert( 3, IsMonomorphism( mono ) );
+          
+          return InjectiveColift( mono, eta );
+          
+        else
+          
+          eta := CokernelColift( P^( i - 2 ), PreCompose( z[i-1], Q^( i - 1 )  ) );
+          
+          mono := CokernelColift( P^( i - 2 ), P^( i - 1 ) );
+          
+          Assert( 3, IsMonomorphism( mono ) );
+          
+          return InjectiveColift( mono, eta );
+          
+        fi;
          
-         if i < 0 then
-           
-           c := ZeroMorphism( P[i], Q[i] );
-           
-         elif i = 0 then
-           
-           a := PreCompose( phi, MonomorphismIntoSomeInjectiveObject( Range( phi ) ) );
-           
-           b := MonomorphismIntoSomeInjectiveObject( Source( phi ) );
-           
-           c := InjectiveColift( b, a );
-           
-         else
-           
-           if IsBound( temp!.( i - 1 ) ) then
-             
-             a := CokernelColift( P^( i - 2 ), PreCompose( temp!.( i - 1 ), Q^( i - 1 )  ) );
-             
-           else
-             
-             a := CokernelColift( P^( i - 2 ), PreCompose( func( i - 1 ), Q^( i - 1 )  ) );
-             
-           fi;
-           
-           b := CokernelColift( P^( i - 2 ), P^( i - 1 ) );
-           
-           c := InjectiveColift( b, a );
-           
-         fi;
-         
-         temp!.( String( i ) ) := c;
-         
-         return c;
-         
-      end;
-      
-    maps := AsZFunction( func );
+      end );
     
-    return CochainMorphism( P, Q, maps );
+    return CochainMorphism( P, Q, z );
     
 end );
 
