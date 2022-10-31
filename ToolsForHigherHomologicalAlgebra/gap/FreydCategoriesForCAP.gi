@@ -332,15 +332,8 @@ InstallMethod( CategoryOfGradedRows,
       end );
       
       ##
-      AddCoefficientsOfMorphismWithGivenBasisOfExternalHom( rows,
+      AddCoefficientsOfMorphism( rows,
         
-        { phi, B } -> CoefficientsOfMorphism( phi )
-      );
-      
-      ##
-      InstallMethod( CoefficientsOfMorphism,
-                [ IsGradedRowOrColumnMorphism and MorphismFilter( rows ) ],
-                
         function( phi )
           local K, degrees_s, degrees_r, degrees, hom_s_r, B, sol, positions, coeff, mon, position_in_basis, p, j;
           

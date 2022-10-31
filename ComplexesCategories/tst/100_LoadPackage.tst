@@ -13,6 +13,8 @@ gap> LoadPackage( "ModulePresentations", false );
 true
 gap> LoadPackage( "FreydCategoriesForCAP", false );
 true
+gap> LoadPackage( "LinearAlgebraForCAP", false );
+true
 gap> SetInfoLevel( InfoPackageLoading, PACKAGE_INFO );;
 gap> LoadPackage( "ComplexesCategories" );
 true
