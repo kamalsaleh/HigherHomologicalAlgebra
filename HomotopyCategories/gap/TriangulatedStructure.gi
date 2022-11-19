@@ -6,408 +6,465 @@
 #
 #####################################################################
 
-BindGlobal( "ADD_FUNCTIONS_FOR_TRIANGULATED_OPERATIONS",
+InstallGlobalFunction( ADD_FUNCTIONS_OF_TRIANGULATED_STRUCTURE_TO_HOMOTOPY_CATEGORY,
 
-function( Ho_C )
-  local complex_cat, N;
+function( homotopy_cat )
+  local cat, complex_cat, N;
   
-  SetFilterObj( Ho_C, IsTriangulatedCategory );
+  #SetFilterObj( homotopy_cat, IsTriangulatedCategory );
   
-  complex_cat := UnderlyingCategory( Ho_C );
+  cat := DefiningCategory( homotopy_cat );
+  
+  complex_cat := UnderlyingCategory( homotopy_cat );
   
   if IsChainComplexCategory( complex_cat ) then
-    N := -1;
+      N := -1;
   else
-    N := 1;
+      N := 1;
   fi;
   
   ## Adding the shift and reverse shift functors
-  AddShiftOnObject( Ho_C,
-    function( C )
-      local F;
+  AddShiftOnObject( homotopy_cat,
+    function( homotopy_cat, C )
+      local objs, diffs;
       
-      F := ShiftFunctor( Ho_C, N );
+      C := UnderlyingCell( C );
       
-      return ApplyFunctor( F, C );
+      objs := ApplyShift( Objects( C ), N );
       
-  end );
-  
-  ##
-  AddShiftOnMorphismWithGivenObjects( Ho_C,
-    function( s, phi, r )
-      local F;
+      diffs := ApplyShift( ApplyMap( Differentials( C ), AdditiveInverseForMorphisms ), N );
       
-      F := ShiftFunctor( Ho_C, N );
-      
-      return ApplyFunctor( F, phi );
+      return ObjectConstructor( homotopy_cat, ObjectConstructor( complex_cat, [ objs, diffs, LowerBound( C ) - N, UpperBound( C ) - N ] ) );
       
   end );
   
   ##
-  AddInverseShiftOnObject( Ho_C,
-      function( C )
-        local F;
-        
-        F := ShiftFunctor( Ho_C, -N );
-   
-        return ApplyFunctor( F, C );
-  
-  end );
-  
-  ##
-  AddInverseShiftOnMorphismWithGivenObjects( Ho_C,
-      function( s, phi, r )
-        local F;
-        
-        F := ShiftFunctor( Ho_C, -N );
+  AddShiftOnMorphismWithGivenObjects( homotopy_cat,
+    function( homotopy_cat, s, phi, r )
+      local morphisms;
       
-        return ApplyFunctor( F, phi );
-  
+      phi := UnderlyingCell( phi );
+      
+      morphisms := ApplyShift( Morphisms( phi ), N );
+      
+      return MorphismConstructor( homotopy_cat, s, MorphismConstructor( complex_cat, UnderlyingCell( s ), [ morphisms, LowerBound( phi ) - N, UpperBound( phi ) - N ], UnderlyingCell( r ) ), r );
+      
   end );
   
   ##
-  AddUnitIsomorphismWithGivenObject( Ho_C, { a, b } -> IdentityMorphism( a ) );
+  AddInverseShiftOnObject( homotopy_cat,
+    function( homotopy_cat, C )
+      local objs, diffs;
+      
+      C := UnderlyingCell( C );
+      
+      objs := ApplyShift( Objects( C ), -N );
+      
+      diffs := ApplyShift( ApplyMap( Differentials( C ), AdditiveInverseForMorphisms ), -N );
+      
+      return ObjectConstructor( homotopy_cat, ObjectConstructor( complex_cat, [ objs, diffs, LowerBound( C ) + N, UpperBound( C ) + N ] ) );
+      
+  end );
   
-  AddInverseOfUnitIsomorphismWithGivenObject( Ho_C, { a, b } -> IdentityMorphism( a ) );
+  ##
+  AddInverseShiftOnMorphismWithGivenObjects( homotopy_cat,
+    function( homotopy_cat, s, phi, r )
+      local morphisms;
+      
+      phi := UnderlyingCell( phi );
+      
+      morphisms := ApplyShift( Morphisms( phi ), -N );
+      
+      return MorphismConstructor( homotopy_cat, s, MorphismConstructor( complex_cat, UnderlyingCell( s ), [ morphisms, LowerBound( phi ) + N, UpperBound( phi ) + N ], UnderlyingCell( r ) ), r );
+      
+  end );
   
-  AddCounitIsomorphismWithGivenObject( Ho_C, { a, b } -> IdentityMorphism( a ) );
+  ##
+  #AddUnitIsomorphismWithGivenObject( homotopy_cat, { a, b } -> IdentityMorphism( a ) );
   
-  AddInverseOfCounitIsomorphismWithGivenObject( Ho_C, { a, b } -> IdentityMorphism( a ) );
+  #AddInverseOfUnitIsomorphismWithGivenObject( homotopy_cat, { a, b } -> IdentityMorphism( a ) );
   
-  AddStandardConeObject( Ho_C,
-    alpha -> MappingCone( UnderlyingCell( alpha ) ) / Ho_C
-  );
+  #AddCounitIsomorphismWithGivenObject( homotopy_cat, { a, b } -> IdentityMorphism( a ) );
   
-  AddMorphismToStandardConeObjectWithGivenStandardConeObject( Ho_C,
-    function( alpha, st_cone )
+  #AddInverseOfCounitIsomorphismWithGivenObject( homotopy_cat, { a, b } -> IdentityMorphism( a ) );
+  
+  AddStandardConeObject( homotopy_cat,
+    function( homotopy_cat, phi )
+      local B, C, objs, diffs, standard_cone;
+      
+      B := Source( phi );
+      C := Range( phi );
+      
+      objs := AsZFunction( i -> DirectSum( cat, [ B[i+N], C[i] ] ) );
+      
+      diffs := AsZFunction( i ->
+                  MorphismBetweenDirectSumsWithGivenDirectSums( cat,
+                      objs[i],
+                      [ B[i+N], C[i] ],
+                      [ [ AdditiveInverseForMorphisms( cat, B^(i+N) ), phi[i+N] ], [ ZeroMorphism( cat, C[i], B[i+2*N] ), C^i ] ],
+                      [ B[i+1+N], C[i+1] ],
+                      objs[i+1] ) );
+      
+      standard_cone := CreateComplex( complex_cat, [ objs, diffs, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
+      
+      return ObjectConstructor( homotopy_cat, standard_cone );
+      
+  end );
+  
+  AddMorphismToStandardConeObjectWithGivenStandardConeObject( homotopy_cat,
+    function( homotopy_cat, alpha, standard_cone )
+      local B, C, morphisms, iota;
+      
+      B := Source( alpha );
+      C := Range( alpha );
+      
+      morphisms := AsZFunction( i ->
+                      UniversalMorphismIntoDirectSumWithGivenDirectSum( cat,
+                          [ B[i+N], C[i] ],
+                            C[i],
+                          [ ZeroMorphism( cat, C[i], B[i+N] ), IdentityMorphism( cat, C[i] ) ],
+                            standard_cone[i] ) );
+      
+      iota := CreateComplexMorphism(
+                    complex_cat,
+                    C,
+                    standard_cone,
+                  [ morphisms, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
+      
+      return MorphismConstructor( homotopy_cat, C, iota, standard_cone );
+      
+  end );
+  
+  #AddMorphismToStandardConeObject( homotopy_cat,
+  #  function( alpha )
+  #    local cell;
+  #
+  #end );
+  
+  AddMorphismFromStandardConeObjectWithGivenObjects( homotopy_cat,
+    function( alpha, standard_cone, shift_B )
       local cell;
       
-      cell := UnderlyingCell( alpha );
+      B := Source( alpha );
+      C := Range( alpha );
       
-      return NaturalInjectionInMappingCone( cell ) / Ho_C;
+      morphisms := AsZFunction( i ->
+                      UniversalMorphismFromDirectSumWithGivenDirectSum( cat,
+                          [ B[i+N], C[i] ],
+                            B[i+N],
+                          [ IdentityMorphism( cat, B[i+N] ), ZeroMorphism( cat, C[i], B[i+N] ) ],
+                            standard_cone[i] ) );
       
-  end );
-  
-  AddMorphismToStandardConeObject( Ho_C,
-    function( alpha )
-      local cell;
+      iota := CreateComplexMorphism(
+                  complex_cat,
+                  UnderlyingCell( standard_cone ),
+                  UnderlyingCell( shift_B ),
+                  [ morphisms, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
       
-      cell := UnderlyingCell( alpha );
-      
-      return NaturalInjectionInMappingCone( cell ) / Ho_C;
-      
-  end );
-  
-  AddMorphismFromStandardConeObjectWithGivenStandardConeObject( Ho_C,
-    function( alpha, st_cone )
-      local cell;
-      
-      cell := UnderlyingCell( alpha );
-      
-      return NaturalProjectionFromMappingCone( cell ) / Ho_C;
+      return MorphismConstructor( homotopy_cat, standard_cone, iota, shift_B );
       
   end );
   
-  AddMorphismFromStandardConeObject( Ho_C,
-    function( alpha )
-      local cell;
-      
-      cell := UnderlyingCell( alpha );
-      
-      return NaturalProjectionFromMappingCone( cell ) / Ho_C;
-      
-  end );
+  #AddMorphismFromStandardConeObject( homotopy_cat,
+  #  function( alpha )
+  #    local cell;
+  #    
+  #    cell := UnderlyingCell( alpha );
+  #    
+  #    return NaturalProjectionFromMappingCone( cell ) / homotopy_cat;
+  #    
+  #end );
 
-#    A ----- alpha ----> B ----------> Cone( alpha ) -----> Shift A
-#    |                   |                |                 |
-#    | mu                | nu             |                 | Shift( mu, 1 )
-#    |                   |                |                 |
-#    v                   v                v                 v
-#    A' ---- beta -----> B' ---------> Cone( beta  ) -----> Shift A'
+# #   A ----- alpha ----> B ----------> Cone( alpha ) -----> Shift A
+# #   |                   |                |                 |
+# #   | mu                | nu             |                 | Shift( mu, 1 )
+# #   |                   |                |                 |
+# #   v                   v                v                 v
+# #   A' ---- beta -----> B' ---------> Cone( beta  ) -----> Shift A'
 
-  ##
-  AddMorphismBetweenStandardConeObjectsWithGivenObjects( Ho_C,
-     function( s, list, r )
-       local alpha, mu, nu, beta, homotopy_maps, maps;
-       
-       alpha := list[1];
-       mu := list[2];
-       nu := list[3];
-       beta := list[4];
-       
-       homotopy_maps := HomotopyMorphisms( PreCompose( alpha, nu ) - PreCompose( mu, beta ) );
-       
-       maps := AsZFunction(
-                 function( i )
-                   return
-                     MorphismBetweenDirectSums(
-                      [
-                        [
-                          mu[ i + N ],
-                          homotopy_maps[ i + N ]
-                        ],
-                        [
-                          ZeroMorphism( Source( nu )[ i ], Range( mu )[ i + N ] ),
-                          nu[ i ]
-                        ]
-                      ] );
-                 end );
-                 
-       return HomotopyCategoryMorphism( s, r, maps );
-       
-  end );
-  
-  ##
-  AddWitnessIsomorphismOntoStandardConeObjectByRotationAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, r )
-      local A, B, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      maps := AsZFunction(
-                function( i )
-                  return
-                  MorphismBetweenDirectSums(
-                    [
-                      [
-                        AdditiveInverse( alpha[ i + N ] ),
-                        IdentityMorphism( A[ i + N ] ),
-                        ZeroMorphism( A[ i + N ], B[ i ] )
-                      ]
-                    ] );
-                end );
-                
-      return HomotopyCategoryMorphism( s, maps, r );
-      
-  end );
+  ###
+  #AddMorphismBetweenStandardConeObjectsWithGivenObjects( homotopy_cat,
+  #   function( s, list, r )
+  #     local alpha, mu, nu, beta, homotopy_maps, maps;
+  #     
+  #     alpha := list[1];
+  #     mu := list[2];
+  #     nu := list[3];
+  #     beta := list[4];
+  #     
+  #     homotopy_maps := HomotopyMorphisms( PreCompose( alpha, nu ) - PreCompose( mu, beta ) );
+  #     
+  #     maps := AsZFunction(
+  #               function( i )
+  #                 return
+  #                   MorphismBetweenDirectSums(
+  #                    [
+  #                      [
+  #                        mu[ i + N ],
+  #                        homotopy_maps[ i + N ]
+  #                      ],
+  #                      [
+  #                        ZeroMorphism( Source( nu )[ i ], Range( mu )[ i + N ] ),
+  #                        nu[ i ]
+  #                      ]
+  #                    ] );
+  #               end );
+  #               
+  #     return HomotopyCategoryMorphism( s, r, maps );
+  #     
+  #end );
+  #
+  ###
+  #AddWitnessIsomorphismOntoStandardConeObjectByRotationAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, r )
+  #    local A, B, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    maps := AsZFunction(
+  #              function( i )
+  #                return
+  #                MorphismBetweenDirectSums(
+  #                  [
+  #                    [
+  #                      AdditiveInverse( alpha[ i + N ] ),
+  #                      IdentityMorphism( A[ i + N ] ),
+  #                      ZeroMorphism( A[ i + N ], B[ i ] )
+  #                    ]
+  #                  ] );
+  #              end );
+  #              
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #    
+  #end );
 
-  ##
-  AddWitnessIsomorphismFromStandardConeObjectByRotationAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, r )
-      local A, B, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      maps := AsZFunction(
-                function( i )
-                  return
-                  MorphismBetweenDirectSums(
-                    [
-                      [ ZeroMorphism( B[ i + N ], A[ i + N ] ) ],
-                      [ IdentityMorphism( A[ i + N ] ) ],
-                      [ ZeroMorphism( B[ i ], A[ i + N ] ) ]
-                    ] );
-                    
-                end );
-       
-      return HomotopyCategoryMorphism( s, maps, r );
-      
-  end );
-  
-  ##
-  AddWitnessIsomorphismOntoStandardConeObjectByInverseRotationAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, r )
-      local A, B, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      maps := AsZFunction(
-                function( i )
-                  return
-                  MorphismBetweenDirectSums(
-                    [
-                      [
-                        ZeroMorphism( B[ i ], A[ i + N ] ),
-                        IdentityMorphism( B[ i ] ),
-                        ZeroMorphism( B[ i ], A[ i ] )
-                      ]
-                    ] );
-                end );
-                
-      return HomotopyCategoryMorphism( s, maps, r );
-        
-  end );
+  ###
+  #AddWitnessIsomorphismFromStandardConeObjectByRotationAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, r )
+  #    local A, B, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    maps := AsZFunction(
+  #              function( i )
+  #                return
+  #                MorphismBetweenDirectSums(
+  #                  [
+  #                    [ ZeroMorphism( B[ i + N ], A[ i + N ] ) ],
+  #                    [ IdentityMorphism( A[ i + N ] ) ],
+  #                    [ ZeroMorphism( B[ i ], A[ i + N ] ) ]
+  #                  ] );
+  #                  
+  #              end );
+  #     
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #    
+  #end );
+  #
+  ###
+  #AddWitnessIsomorphismOntoStandardConeObjectByInverseRotationAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, r )
+  #    local A, B, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    maps := AsZFunction(
+  #              function( i )
+  #                return
+  #                MorphismBetweenDirectSums(
+  #                  [
+  #                    [
+  #                      ZeroMorphism( B[ i ], A[ i + N ] ),
+  #                      IdentityMorphism( B[ i ] ),
+  #                      ZeroMorphism( B[ i ], A[ i ] )
+  #                    ]
+  #                  ] );
+  #              end );
+  #              
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #      
+  #end );
 
-  ##
-  AddWitnessIsomorphismFromStandardConeObjectByInverseRotationAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, r )
-      local A, B, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-     
-      maps := AsZFunction(
-                function( i )
-                  return
-                    MorphismBetweenDirectSums(
-                      [
-                        [ ZeroMorphism( A[ i + N ], B[ i ] ) ],
-                        [ IdentityMorphism( B[ i ] ) ],
-                        [ alpha[ i ] ]
-                      ] );
-                end );
-                
-      return HomotopyCategoryMorphism( s, maps, r );
-        
-  end );
-  
-  ## Can be derived, but here is a direct implementation    
-  ##
-  AddDomainMorphismByOctahedralAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, beta, gamma, r )
-      local A, id_A;
-      
-      A := Source( alpha );
-      
-      id_A := IdentityMorphism( A );
-      
-      return MorphismBetweenStandardConeObjectsWithGivenObjects( s, [ alpha, id_A, beta, gamma ], r );
-      
-  end );
-  
-  ##
-  AddMorphismToConeObjectByOctahedralAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, beta, gamma, r )
-      local A, B, C, h, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      C := Range( beta );
-      
-      h := HomotopyMorphisms( PreCompose( alpha, beta ) - gamma );
-      
-      maps := AsZFunction(
-                i -> MorphismBetweenDirectSums(
-                  [
-                    [
-                      alpha[ i + N ],
-                      -h[ i + N ]
-                    ],
-                    [
-                      ZeroMorphism( C[ i ], B[ i + N ] ),
-                      IdentityMorphism( C[ i ] )
-                    ],
-                  ]
-                )
-              );
-              
-      return HomotopyCategoryMorphism( s, maps, r );
-       
-  end );
-  
-  ## Can be derived, but here is a direct implementation
-  ##
-  AddMorphismFromConeObjectByOctahedralAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, beta, gamma, r )
-      local A, B, C, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      C := Range( beta );
-      
-      maps := AsZFunction(
-                i -> MorphismBetweenDirectSums(
-                  [
-                    [ 
-                      ZeroMorphism( B[ i + N ], A[ i + 2 * N ] ),
-                      IdentityMorphism( B[ i + N ] )
-                    ],
-                    [
-                      ZeroMorphism( C[ i ], A[ i + 2 * N ]  ),
-                      ZeroMorphism( C[ i ], B[ i + N ] )
-                    ],
-                  ]
-                ) 
-              );
-              
-      return HomotopyCategoryMorphism( s, maps, r );
-      
-  end );
-  
-  ##
-  AddWitnessIsomorphismOntoStandardConeObjectByOctahedralAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, beta, gamma, r )
-      local A, B, C, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      C := Range( beta );
-     
-      maps := AsZFunction(
-                i -> MorphismBetweenDirectSums(
-                  [
-                    [
-                      ZeroMorphism( B[ i + N ], A[ i + 2 * N ] ),
-                      IdentityMorphism( B[ i + N ] ),
-                      ZeroMorphism( B[ i + N ], A[ i + N ] ),
-                      ZeroMorphism( B[ i + N ], C[ i ] )
-                    ],
-                    [
-                      ZeroMorphism( C[ i ] , A[ i + 2 * N ] ),
-                      ZeroMorphism( C[ i ], B[ i + N ] ),
-                      ZeroMorphism( C[ i ], A[ i + N ] ),
-                      IdentityMorphism( C[ i ] )
-                    ]
-                  ]
-                )
-              );
-              
-      return HomotopyCategoryMorphism( s, maps, r );
-      
-  end );
+  ###
+  #AddWitnessIsomorphismFromStandardConeObjectByInverseRotationAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, r )
+  #    local A, B, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #   
+  #    maps := AsZFunction(
+  #              function( i )
+  #                return
+  #                  MorphismBetweenDirectSums(
+  #                    [
+  #                      [ ZeroMorphism( A[ i + N ], B[ i ] ) ],
+  #                      [ IdentityMorphism( B[ i ] ) ],
+  #                      [ alpha[ i ] ]
+  #                    ] );
+  #              end );
+  #              
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #      
+  #end );
+  #
+  ### Can be derived, but here is a direct implementation    
+  ###
+  #AddDomainMorphismByOctahedralAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, beta, gamma, r )
+  #    local A, id_A;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    id_A := IdentityMorphism( A );
+  #    
+  #    return MorphismBetweenStandardConeObjectsWithGivenObjects( s, [ alpha, id_A, beta, gamma ], r );
+  #    
+  #end );
+  #
+  ###
+  #AddMorphismToConeObjectByOctahedralAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, beta, gamma, r )
+  #    local A, B, C, h, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    C := Range( beta );
+  #    
+  #    h := HomotopyMorphisms( PreCompose( alpha, beta ) - gamma );
+  #    
+  #    maps := AsZFunction(
+  #              i -> MorphismBetweenDirectSums(
+  #                [
+  #                  [
+  #                    alpha[ i + N ],
+  #                    -h[ i + N ]
+  #                  ],
+  #                  [
+  #                    ZeroMorphism( C[ i ], B[ i + N ] ),
+  #                    IdentityMorphism( C[ i ] )
+  #                  ],
+  #                ]
+  #              )
+  #            );
+  #            
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #     
+  #end );
+  #
+  ### Can be derived, but here is a direct implementation
+  ###
+  #AddMorphismFromConeObjectByOctahedralAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, beta, gamma, r )
+  #    local A, B, C, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    C := Range( beta );
+  #    
+  #    maps := AsZFunction(
+  #              i -> MorphismBetweenDirectSums(
+  #                [
+  #                  [ 
+  #                    ZeroMorphism( B[ i + N ], A[ i + 2 * N ] ),
+  #                    IdentityMorphism( B[ i + N ] )
+  #                  ],
+  #                  [
+  #                    ZeroMorphism( C[ i ], A[ i + 2 * N ]  ),
+  #                    ZeroMorphism( C[ i ], B[ i + N ] )
+  #                  ],
+  #                ]
+  #              ) 
+  #            );
+  #            
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #    
+  #end );
+  #
+  ###
+  #AddWitnessIsomorphismOntoStandardConeObjectByOctahedralAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, beta, gamma, r )
+  #    local A, B, C, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    C := Range( beta );
+  #   
+  #    maps := AsZFunction(
+  #              i -> MorphismBetweenDirectSums(
+  #                [
+  #                  [
+  #                    ZeroMorphism( B[ i + N ], A[ i + 2 * N ] ),
+  #                    IdentityMorphism( B[ i + N ] ),
+  #                    ZeroMorphism( B[ i + N ], A[ i + N ] ),
+  #                    ZeroMorphism( B[ i + N ], C[ i ] )
+  #                  ],
+  #                  [
+  #                    ZeroMorphism( C[ i ] , A[ i + 2 * N ] ),
+  #                    ZeroMorphism( C[ i ], B[ i + N ] ),
+  #                    ZeroMorphism( C[ i ], A[ i + N ] ),
+  #                    IdentityMorphism( C[ i ] )
+  #                  ]
+  #                ]
+  #              )
+  #            );
+  #            
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #    
+  #end );
 
-  ##
-  AddWitnessIsomorphismFromStandardConeObjectByOctahedralAxiomWithGivenObjects( Ho_C,
-    function( s, alpha, beta, gamma, r )
-      local A, B, C, h, maps;
-      
-      A := Source( alpha );
-      
-      B := Range( alpha );
-      
-      C := Range( beta );
-      
-      h := HomotopyMorphisms( PreCompose( alpha, beta ) - gamma );
-      
-      maps := AsZFunction(
-                i -> MorphismBetweenDirectSums(
-                  [
-                    [
-                      ZeroMorphism( A[ i + 2 * N ], B[ i + N ] ),
-                      ZeroMorphism( A[ i + 2 * N ], C[ i ] )
-                    ],
-                    [
-                      IdentityMorphism( B[ i + N ] ),
-                      ZeroMorphism( B[ i + N ], C[ i ] )
-                    ],
-                    [
-                      alpha[ i + N ],
-                      -h[ i + N ]
-                    ],
-                    [
-                      ZeroMorphism( C[ i ], B[ i + N ] ),
-                      IdentityMorphism( C[ i ] )
-                    ]
-                  ]
-                )
-              );
-              
-      return HomotopyCategoryMorphism( s, maps, r );
-      
-  end );
+  ###
+  #AddWitnessIsomorphismFromStandardConeObjectByOctahedralAxiomWithGivenObjects( homotopy_cat,
+  #  function( s, alpha, beta, gamma, r )
+  #    local A, B, C, h, maps;
+  #    
+  #    A := Source( alpha );
+  #    
+  #    B := Range( alpha );
+  #    
+  #    C := Range( beta );
+  #    
+  #    h := HomotopyMorphisms( PreCompose( alpha, beta ) - gamma );
+  #    
+  #    maps := AsZFunction(
+  #              i -> MorphismBetweenDirectSums(
+  #                [
+  #                  [
+  #                    ZeroMorphism( A[ i + 2 * N ], B[ i + N ] ),
+  #                    ZeroMorphism( A[ i + 2 * N ], C[ i ] )
+  #                  ],
+  #                  [
+  #                    IdentityMorphism( B[ i + N ] ),
+  #                    ZeroMorphism( B[ i + N ], C[ i ] )
+  #                  ],
+  #                  [
+  #                    alpha[ i + N ],
+  #                    -h[ i + N ]
+  #                  ],
+  #                  [
+  #                    ZeroMorphism( C[ i ], B[ i + N ] ),
+  #                    IdentityMorphism( C[ i ] )
+  #                  ]
+  #                ]
+  #              )
+  #            );
+  #            
+  #    return HomotopyCategoryMorphism( s, maps, r );
+  #    
+  #end );
   
 end );
 
