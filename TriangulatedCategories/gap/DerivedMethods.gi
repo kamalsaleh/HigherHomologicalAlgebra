@@ -135,9 +135,9 @@ end );
 AddDerivationToCAP( MorphismFromConeObjectByOctahedralAxiomWithGivenObjects,
                 [
                   [ StandardConeObject, 1 ],
-                  [ MorphismFromStandardConeObjectWithGivenStandardConeObject, 1 ],
+                  [ MorphismFromStandardConeObjectWithGivenObjects, 1 ],
                   [ MorphismToStandardConeObjectWithGivenStandardConeObject, 1 ],
-                  [ ShiftOnObject, 1 ],
+                  [ ShiftOnObject, 2 ],
                   [ ShiftOnMorphismWithGivenObjects, 1 ],
                   [ PreCompose, 1 ]
                 ],
@@ -146,9 +146,10 @@ AddDerivationToCAP( MorphismFromConeObjectByOctahedralAxiomWithGivenObjects,
     
     B := Range( alpha );
      
-    pi_beta := MorphismFromStandardConeObjectWithGivenStandardConeObject(
+    pi_beta := MorphismFromStandardConeObjectWithGivenObjects(
+                          s,
                           beta,
-                          s
+                          ShiftOnObject( B )
                       );
     
     cone_alpha := StandardConeObject( alpha );

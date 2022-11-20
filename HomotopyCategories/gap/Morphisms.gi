@@ -3,48 +3,58 @@
 #
 # Implementations
 #
-#
 #####################################################################
 
+##
+for info in [ [ "Morphisms", 1 ],
+              [ "MorphismAt", 2 ],
+              [ "MorphismsSupport", 1 ],
+              [ "LowerBound", 1 ],
+              [ "UpperBound", 1 ],
+              [ "CohomologyFunctorialAt", 2 ],
+              [ "HomologyFunctorialAt", 2 ],
+              [ "CocyclesFunctorialAt", 2 ],
+              [ "CyclesFunctorialAt", 2 ],
+              ] do
+  
+  ##
+  InstallOtherMethod(
+      ValueGlobal( info[1] ),
+      (function()
+          if info[2] = 1 then
+            return [ IsHomotopyCategoryMorphism ];
+          elif info[2] = 2 then
+            return [ IsHomotopyCategoryMorphism, IsInt ];
+          fi;
+      end)(),
+      EvalString( ReplacedStringViaRecord( "i_args -> oper( s_args );",
+                    rec( oper := info[1],
+                         i_args := (function()
+                                      if info[2] = 1 then
+                                        return "phi";
+                                      elif info[2] = 2 then
+                                        return "{ phi, i }";
+                                      fi;
+                                    end)(),
+                         s_args := (function()
+                                      if info[2] = 1 then
+                                        return "UnderlyingCell( phi )";
+                                      elif info[2] = 2 then
+                                        return "UnderlyingCell( phi ), i";
+                                      fi;
+                                    end)()))));
+  
+od;
 
 ##
 InstallMethod( \[\],
           [ IsHomotopyCategoryMorphism, IsInt ],
   
-  { a, i } -> UnderlyingCell( a )[ i ]
+  { phi, i } -> UnderlyingCell( phi )[ i ]
 );
 
 ##
-InstallOtherMethod( ViewObj,
-          [ IsHomotopyCategoryMorphism ],
-  
-  function( phi )
-    local lower_bound, upper_bound, dots;
-    
-    upper_bound := UpperBound( UnderlyingCell( phi ) );
-    lower_bound := LowerBound( UnderlyingCell( phi ) );
-    
-    if IsInt( upper_bound ) then
-      upper_bound := String( upper_bound );
-    elif upper_bound = infinity then
-      upper_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-    else
-      upper_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
-    fi;
-    
-    if IsInt( lower_bound ) then
-      lower_bound := String( lower_bound );
-    elif lower_bound = infinity then
-      lower_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-    else
-      lower_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
-    fi;
-    
-    dots := Concatenation( ListWithIdenticalEntries( 3, TEXTMTRANSLATIONS!.cdot ) );
-    
-    Print( "<A morphism in ", Name( CapCategory( phi ) ), " supported in the window [", lower_bound, " ", dots, " ", upper_bound, "]>" );
-    
-end );
+InstallOtherMethod( ViewObj, [ IsHomotopyCategoryMorphism ], _complexes_ViewObj );
 
 ##
 InstallOtherMethod( Display,
@@ -53,15 +63,12 @@ InstallOtherMethod( Display,
   function( phi )
     local l, u;
     
-    l := LowerBound( UnderlyingCell( phi ) );
-    u := UpperBound( UnderlyingCell( phi ) );
+    l := LowerBound( phi );
+    u := UpperBound( phi );
     
     if ForAll( [ l, u ], IsInt ) then
-        
         Display( UnderlyingCell( phi ), l, u );
-        
-        Print( "\nAn object in ", Name( CapCategory( phi ) ), " defined by the above data\n" );
-        
+        Print( "\nA morphism in ", Name( CapCategory( phi ) ), " defined by the above data\n" );
     else
         TryNextMethod( );
     fi;

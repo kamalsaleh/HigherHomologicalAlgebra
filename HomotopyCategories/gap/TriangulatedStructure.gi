@@ -112,11 +112,11 @@ function( homotopy_cat )
   end );
   
   AddMorphismToStandardConeObjectWithGivenStandardConeObject( homotopy_cat,
-    function( homotopy_cat, alpha, standard_cone )
+    function( homotopy_cat, phi, standard_cone )
       local B, C, morphisms, iota;
       
-      B := Source( alpha );
-      C := Range( alpha );
+      B := Source( phi );
+      C := Range( phi );
       
       morphisms := AsZFunction( i ->
                       UniversalMorphismIntoDirectSumWithGivenDirectSum( cat,
@@ -127,8 +127,8 @@ function( homotopy_cat )
       
       iota := CreateComplexMorphism(
                     complex_cat,
-                    C,
-                    standard_cone,
+                    UnderlyingCell( C ),
+                    UnderlyingCell( standard_cone ),
                   [ morphisms, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
       
       return MorphismConstructor( homotopy_cat, C, iota, standard_cone );
@@ -136,34 +136,34 @@ function( homotopy_cat )
   end );
   
   #AddMorphismToStandardConeObject( homotopy_cat,
-  #  function( alpha )
+  #  function( phi )
   #    local cell;
   #
   #end );
   
-  AddMorphismFromStandardConeObjectWithGivenObjects( homotopy_cat,
-    function( alpha, standard_cone, shift_B )
-      local cell;
-      
-      B := Source( alpha );
-      C := Range( alpha );
-      
-      morphisms := AsZFunction( i ->
-                      UniversalMorphismFromDirectSumWithGivenDirectSum( cat,
-                          [ B[i+N], C[i] ],
-                            B[i+N],
-                          [ IdentityMorphism( cat, B[i+N] ), ZeroMorphism( cat, C[i], B[i+N] ) ],
-                            standard_cone[i] ) );
-      
-      iota := CreateComplexMorphism(
-                  complex_cat,
-                  UnderlyingCell( standard_cone ),
-                  UnderlyingCell( shift_B ),
-                  [ morphisms, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
-      
-      return MorphismConstructor( homotopy_cat, standard_cone, iota, shift_B );
-      
-  end );
+  #AddMorphismFromStandardConeObjectWithGivenObjects( homotopy_cat,
+  #  function( alpha, standard_cone, shift_B )
+  #    local B, C, morphisms, iota;
+  #    
+  #    B := Source( alpha );
+  #    C := Range( alpha );
+  #    
+  #    morphisms := AsZFunction( i ->
+  #                    UniversalMorphismFromDirectSumWithGivenDirectSum( cat,
+  #                        [ B[i+N], C[i] ],
+  #                          B[i+N],
+  #                        [ IdentityMorphism( cat, B[i+N] ), ZeroMorphism( cat, C[i], B[i+N] ) ],
+  #                          standard_cone[i] ) );
+  #    
+  #    iota := CreateComplexMorphism(
+  #                complex_cat,
+  #                UnderlyingCell( standard_cone ),
+  #                UnderlyingCell( shift_B ),
+  #                [ morphisms, Minimum( LowerBound( B ) - N, LowerBound( C ) ), Maximum( UpperBound( B ) - N, UpperBound( C ) ) ] );
+  #    
+  #    return MorphismConstructor( homotopy_cat, standard_cone, iota, shift_B );
+  #    
+  #end );
   
   #AddMorphismFromStandardConeObject( homotopy_cat,
   #  function( alpha )

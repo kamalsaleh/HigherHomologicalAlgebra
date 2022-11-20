@@ -109,18 +109,18 @@ DeclareOperation( "AddMorphismToStandardConeObject", [ IsCapCategory, IsList ] )
 #! from the standard cone object $C(\alpha)$.
 #! @Arguments alpha, C
 #! @Returns a morphism $\pi(\alpha):C(\alpha)\to\Sigma A$
-DeclareOperation( "MorphismFromStandardConeObjectWithGivenStandardConeObject", [ IsCapCategoryMorphism, IsCapCategoryObject ] );
+DeclareOperation( "MorphismFromStandardConeObjectWithGivenObjects", [ IsCapCategoryObject, IsCapCategoryMorphism, IsCapCategoryObject ] );
 
 #! @Description
 #! The arguments are a triangulated category $\mathcal{T}$ and a function $F$. This operation adds the given function $F$ to
 #! the category for the basic operation <C>MorphismFromStandardConeObjectWithGivenStandardConeObject</C>.
 #! @Returns nothing
 #! @Arguments T, F
-DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenStandardConeObject", [ IsCapCategory, IsFunction ] );
+DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenObjects", [ IsCapCategory, IsFunction ] );
 
-DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenStandardConeObject", [ IsCapCategory, IsFunction, IsInt ] );
-DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenStandardConeObject", [ IsCapCategory, IsList, IsInt ] );
-DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenStandardConeObject", [ IsCapCategory, IsList ] );
+DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenObjects", [ IsCapCategory, IsFunction, IsInt ] );
+DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenObjects", [ IsCapCategory, IsList, IsInt ] );
+DeclareOperation( "AddMorphismFromStandardConeObjectWithGivenObjects", [ IsCapCategory, IsList ] );
 
 #! @Description
 #! The argument is a morphism $\alpha: A \to B$ in a triangulated category.

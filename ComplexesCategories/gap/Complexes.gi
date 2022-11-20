@@ -180,7 +180,7 @@ InstallMethod( \[\],
 InstallMethod( ObjectsSupport,
           [ IsChainOrCochainComplex, IsInt, IsInt ],
   
-  { C, m, n } -> Filtered( [ m .. n ], i -> not IsZeroForObjects( ObjectAt( C, i ) ) )
+  { C, m, n } -> Filtered( [ m .. n ], i -> not IsZeroForObjects( C[i] ) )
 );
 
 ##
@@ -194,7 +194,7 @@ InstallMethod( ObjectsSupport,
 InstallMethod( DifferentialsSupport,
           [ IsChainOrCochainComplex, IsInt, IsInt ],
   
-  { C, m, n } -> Filtered( [ m .. n ], i -> not IsZeroForMorphisms( DifferentialAt( C, i ) ) )
+  { C, m, n } -> Filtered( [ m .. n ], i -> not IsZeroForMorphisms( C^i ) )
 );
 
 ##
@@ -208,14 +208,14 @@ InstallMethod( DifferentialsSupport,
 InstallMethod( CocyclesAtOp,
           [ IsCochainComplex, IsInt ],
   
-  { C, i } -> KernelObject( DifferentialAt( C, i ) )
+  { C, i } -> KernelObject( C^i )
 );
 
 ##
 InstallMethod( CocyclesEmbeddingAtOp,
           [ IsCochainComplex, IsInt ],
   
-  { C, i } -> KernelEmbeddingWithGivenKernelObject( DifferentialAt( C, i ), CocyclesAt( C, i ) )
+  { C, i } -> KernelEmbeddingWithGivenKernelObject( C^i, CocyclesAt( C, i ) )
 );
 
 ##
@@ -377,123 +377,49 @@ end );
 #
 #########################################
 
-##
-InstallMethod( ViewObj,
-        [ IsChainOrCochainComplex ],
+BindGlobal( "_complexes_ViewObj",
   
-  function( C )
-    local lower_bound, upper_bound, dots;
+  function ( x )
+    local b, dots, cell, i;
     
-    if HasLowerBound( C ) and HasUpperBound( C ) then
+    b := [ LowerBound( x ), UpperBound( x ) ];
+    
+    for i in [ 1, 2 ] do
       
-      upper_bound := UpperBound( C );
-      lower_bound := LowerBound( C );
-      
-      if IsInt( upper_bound ) then
-        upper_bound := String( upper_bound );
-      elif upper_bound = infinity then
-        upper_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-      else
-        upper_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
+      if IsInt( b[i] ) then
+        b[i] := String( b[i] );
+      elif b[i] = infinity then
+        b[i] := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
+      elif b[i] = -infinity then
+        b[i] := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
       fi;
       
-      if IsInt( lower_bound ) then
-        lower_bound := String( lower_bound );
-      elif lower_bound = infinity then
-        lower_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-      else
-        lower_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
-      fi;
-      
-      dots := Concatenation( ListWithIdenticalEntries( 3, TEXTMTRANSLATIONS!.cdot ) );
-      
-      Print( "<An object in ", Name( CapCategory( C ) ), " supported in the window [", lower_bound, " ", dots, " ", upper_bound, "]>" );
-      
-    else
-      
-      TryNextMethod( );
-      
+    od;
+    
+    dots := Concatenation( ListWithIdenticalEntries( 3, TEXTMTRANSLATIONS!.cdot ) );
+    
+    if IsCapCategoryObject( x ) then
+        cell := "An object";
+    elif IsCapCategoryMorphism( x ) then
+        cell := "A morphism";
     fi;
+    
+    Print( "<", cell, " in ", Name( CapCategory( x ) ), " supported in the window [", b[1], " ", dots, " ", b[2], "]>" );
     
 end );
 
 ##
-InstallOtherMethod( LaTeXOutput,
-        [ IsCochainComplex, IsInt, IsInt ],
-        
-  function( C, l_C, u_C )
-    local latex_string, i;
-    
-    latex_string := "\\begin{array}{c}\n";
-    
-    latex_string := Concatenation( latex_string, LaTeXOutput( C[ u_C ] ), "\n " );
-    
-    for i in Reversed( [ l_C .. u_C - 1 ] ) do
-      
-      latex_string := Concatenation( latex_string, "\\\\\n\\uparrow_{\\phantom{", String( i ), "}} \n\\\\\n " );
-      
-      latex_string := Concatenation( latex_string, LaTeXOutput( C ^ i : OnlyDatum := true ), "\n\\\\\n " );
-      
-      latex_string := Concatenation( latex_string, "{\\vert_{", String( i ), "}}\n " );
-      
-      latex_string := Concatenation( latex_string, "\n\\\\\n", LaTeXOutput( C[ i ] ) );
-      
-    od;
-    
-    return Concatenation( latex_string, "\\end{array}" );
-    
-end );
-
-#
-InstallOtherMethod( LaTeXOutput,
-        [ IsChainOrCochainComplex, IsInt, IsInt ],
-  function( C, l, u )
-    local latex_string, i;
-    
-    latex_string := "\\begin{array}{c}\n ";
-    
-    for i in Reversed( [ l + 1 .. u ] ) do
-      
-      latex_string := Concatenation( latex_string, "\\\\ \n ", LaTeXOutput( C[ i ] ), " \n " );
-      
-      latex_string := Concatenation( latex_string, "\\\\ \n  \\vert^{", String( i ), "} \n \\\\ \n " );
-      
-      latex_string := Concatenation( latex_string, LaTeXOutput( C ^ i : OnlyDatum := true ), " \n \\\\ \n " );
-      
-      latex_string := Concatenation( latex_string, "{ \\downarrow_{\\phantom{", String( i ), "}}} \n " );
-      
-    od;
-    
-    latex_string := Concatenation( latex_string, "\\\\ \n ", LaTeXOutput( C[ l ] ) );
-    
-    latex_string := Concatenation( latex_string, "\\end{array}" );
-    
-    return latex_string;
-    
-end );
-
-##
-InstallOtherMethod( LaTeXOutput,
-          [ IsChainOrCochainComplex ],
-  function ( C )
-    
-    if HasLowerBound( C ) and HasUpperBound( C ) then
-        return LaTeXOutput( C, LowerBound( C ), UpperBound( C ) );
-    else
-        TryNextMethod( );
-    fi;
-    
-end );
+InstallOtherMethod( ViewObj, [ IsChainOrCochainComplex ], _complexes_ViewObj );
 
 ##
 InstallOtherMethod( Display,
         [ IsCochainComplex, IsInt, IsInt ],
 
-  function ( C, m, n )
+  function ( C, l, u )
     local s, i;
     
-    for i in Reversed( [ m .. n ] ) do
-      if i <> n then
+    for i in Reversed( [ l .. u ] ) do
+      if i <> u then
         Print( "  ", " Λ", "\n" );
         Print( "  ", " |", "\n" );
         Display( C^i );
@@ -503,7 +429,7 @@ InstallOtherMethod( Display,
       s := Concatenation( "== ", String( i ), " =======================" );
       Print( s );
       Print( "\n" );
-      Display( C[ i ] );
+      Display( C[i] );
       Print( Concatenation(
         ListWithIdenticalEntries(
           Length( s ), "=" ) )
@@ -516,52 +442,114 @@ end );
 ##
 InstallOtherMethod( Display,
         [ IsChainComplex, IsInt, IsInt ],
-
-  function( C, m, n )
+  
+  function ( C, l, u )
     local s, i;
     
-    for i in Reversed( [ m .. n ] ) do
-        
-        s := Concatenation( "== ", String( i ), " =======================" );
-        Print( s );
-        Print( "\n" );
-        ViewObj( C[ i ] );
-        Print( "\n" );
-        Print( Concatenation(
-          ListWithIdenticalEntries(
-            Length( s ), "=" ) )
-          );
-        Print( "\n\n" );
-        if i <> m then
-          Print( "  ", " |", "\n" );
-          Display( C^i );
-          Print( "\n" );
-          Print( "  ", " |", "\n" );
-          Print( "  ", " V", "\n" );
-          Print( "\n" );
-        fi;
-      od;
+    for i in Reversed( [ l .. u ] ) do
       
+      s := Concatenation( "== ", String( i ), " =======================" );
+      Print( s );
+      Print( "\n" );
+      ViewObj( C[i] );
+      Print( "\n" );
+      Print( Concatenation(
+        ListWithIdenticalEntries(
+          Length( s ), "=" ) )
+        );
+      Print( "\n\n" );
+      if i <> l then
+        Print( "  ", " |", "\n" );
+        Display( C^i );
+        Print( "\n" );
+        Print( "  ", " |", "\n" );
+        Print( "  ", " V", "\n" );
+        Print( "\n" );
+      fi;
+      
+    od;
+    
 end );
 
 ##
 InstallOtherMethod( Display,
         [ IsChainOrCochainComplex ],
         
-  function( C )
+  function ( C )
     local l, u;
     
     l := LowerBound( C );
     u := UpperBound( C );
     
     if ForAll( [ l, u ], IsInt ) then
-        
         Display( C, l, u );
-        
         Print( "\nAn object in ", Name( CapCategory( C ) ), " defined by the above data\n" );
-        
     else
-        TryNextMethod( );
+        TryNextMethod();
+    fi;
+    
+end );
+
+##
+InstallOtherMethod( LaTeXOutput,
+        [ IsCochainComplex, IsInt, IsInt ],
+        
+  function ( C, l_C, u_C )
+    local latex_string, i;
+    
+    latex_string := "\\begin{array}{c}\n";
+    latex_string := Concatenation( latex_string, LaTeXOutput( C[ u_C ] ), "\n " );
+    
+    for i in Reversed( [ l_C .. u_C - 1 ] ) do
+      
+      latex_string := Concatenation( latex_string, "\\\\\n\\uparrow_{\\phantom{", String( i ), "}} \n\\\\\n " );
+      latex_string := Concatenation( latex_string, LaTeXOutput( C ^ i : OnlyDatum := true ), "\n\\\\\n " );
+      latex_string := Concatenation( latex_string, "{\\vert_{", String( i ), "}}\n " );
+      latex_string := Concatenation( latex_string, "\n\\\\\n", LaTeXOutput( C[ i ] ) );
+      
+    od;
+    
+    return Concatenation( latex_string, "\\end{array}" );
+    
+end );
+
+#
+InstallOtherMethod( LaTeXOutput,
+        [ IsChainOrCochainComplex, IsInt, IsInt ],
+  function ( C, l, u )
+    local latex_string, i;
+    
+    latex_string := "\\begin{array}{c}\n ";
+    
+    for i in Reversed( [ l + 1 .. u ] ) do
+      
+      latex_string := Concatenation( latex_string, "\\\\ \n ", LaTeXOutput( C[ i ] ), " \n " );
+      latex_string := Concatenation( latex_string, "\\\\ \n  \\vert^{", String( i ), "} \n \\\\ \n " );
+      latex_string := Concatenation( latex_string, LaTeXOutput( C ^ i : OnlyDatum := true ), " \n \\\\ \n " );
+      latex_string := Concatenation( latex_string, "{ \\downarrow_{\\phantom{", String( i ), "}}} \n " );
+      
+    od;
+    
+    latex_string := Concatenation( latex_string, "\\\\ \n ", LaTeXOutput( C[ l ] ) );
+    latex_string := Concatenation( latex_string, "\\end{array}" );
+    
+    return latex_string;
+    
+end );
+
+##
+InstallOtherMethod( LaTeXOutput,
+          [ IsChainOrCochainComplex ],
+  function ( C )
+    local l, u;
+    
+    l := LowerBound( C );
+    u := UpperBound( C );
+    
+    if ForAll( [ l, u ], IsInt ) then
+        return LaTeXOutput( C, l, u );
+    else
+        return fail;
     fi;
     
 end );

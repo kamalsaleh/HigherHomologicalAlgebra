@@ -341,37 +341,9 @@ end );
 #
 #################################
 
+
 ##
-InstallMethod( ViewObj,
-          [ IsChainOrCochainMorphism ],
-        
-  function( phi )
-    local lower_bound, upper_bound, dots;
-    
-    upper_bound := UpperBound( phi );
-    lower_bound := LowerBound( phi );
-    
-    if IsInt( upper_bound ) then
-      upper_bound := String( upper_bound );
-    elif upper_bound = infinity then
-      upper_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-    else
-      upper_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
-    fi;
-    
-    if IsInt( lower_bound ) then
-      lower_bound := String( lower_bound );
-    elif lower_bound = infinity then
-      lower_bound := Concatenation( "+", TEXTMTRANSLATIONS!.infty );
-    else
-      lower_bound := Concatenation( "-", TEXTMTRANSLATIONS!.infty );
-    fi;
-    
-    dots := Concatenation( ListWithIdenticalEntries( 3, TEXTMTRANSLATIONS!.cdot ) );
-    
-    Print( "<A morphism in ", Name( CapCategory( phi ) ), " supported in the window [", lower_bound, " ", dots, " ", upper_bound, "]>" );
-    
-end );
+InstallMethod( ViewObj, [ IsChainOrCochainMorphism ], _complexes_ViewObj );
 
 ##
 InstallOtherMethod( Display,
@@ -390,15 +362,13 @@ InstallOtherMethod( Display,
       
     od;
     
-    Print( "\nA morphism in ", Name( CapCategory( map ) ), " defined by the above data\n" );
-    
 end );
 
 ##
 InstallMethod( Display,
           [ IsChainOrCochainMorphism ],
     
-  function( phi )
+  function ( phi )
     local l, u;
     
     l := LowerBound( phi );
@@ -407,6 +377,8 @@ InstallMethod( Display,
     if ForAll( [ l, u ], IsInt ) then
       
       Display( phi, l, u );
+      
+      Print( "\nA morphism in ", Name( CapCategory( phi ) ), " defined by the above data\n" );
       
     else
       
@@ -420,7 +392,7 @@ end );
 InstallOtherMethod( LaTeXOutput,
         [ IsChainOrCochainMorphism, IsInt, IsInt ],
         
-  function( phi, l, u )
+  function ( phi, l, u )
     local OnlyDatum, s, i;
     
     OnlyDatum := ValueOption( "OnlyDatum" );
