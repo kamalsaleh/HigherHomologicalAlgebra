@@ -4,6 +4,19 @@
 # Implementations
 #
 
+# _dgcomplexes_StrongExceptionalSequence( objects_infos, nr_generating_morphisms )
+#
+# Randomly generates a strong exceptional sequence datum suitable for
+# DgCochainComplexCategoryFromGeneratorsAndRelations.
+#
+# Arguments:
+#   objects_infos := [ nr_objects, bounds ]
+#     - nr_objects: positive integer, the number of exceptional objects E_1 < ... < E_n
+#     - bounds: [ lower, upper ], the cohomological support interval shared by all objects
+#   nr_generating_morphisms: non-negative integer, the number of generating Hom-spaces to add
+#     (each becomes a single degree-0 morphism E_i -> E_j with i < j, chosen randomly)
+#
+# Returns [ objects, morphisms, relations ] where each morphism f satisfies d(f) = 0.
 BindGlobal( "_dgcomplexes_StrongExceptionalSequence",
   
   function( objects_infos, nr_generating_morphisms )
@@ -29,8 +42,8 @@ BindGlobal( "_dgcomplexes_StrongExceptionalSequence",
         name := Concatenation( "f", String( info[1][1] ), "_", String( info[1][2] ), "_", String( i ) );
         latex := Concatenation( "f_{", String( info[1][1] ), ",", String( info[1][2] ), ",", String( i ), "}" );
         
-        Add( morphisms, [ name,  info[1],  0, bounds, latex ] );
-        Add( relations, [ Concatenation( "Differential( ", name, " )" ), info[1][1] ] );
+        Add( morphisms, [ name, [ objects[info[1][1]][1], objects[info[1][2]][1] ], 0, bounds, latex ] );
+        Add( relations, [ Concatenation( "Differential( ", name, " )" ), objects[info[1][1]][1] ] );
         
       od;
         
@@ -40,20 +53,47 @@ BindGlobal( "_dgcomplexes_StrongExceptionalSequence",
     
 end );
 
-#objects := [ [ "A", [ 0, 5 ] ],
-#             [ "B", [ 1, 6 ] ] ];
-#
-#morphisms := [ [ "phi", [ 1, 2 ], 1, [ 0, 5 ], "\\phi" ],
-#          [ "psi", [ 2, 1 ], -1, [ 1, 6 ], "\\psi" ] ];
-#
-#relations := [ [ "PreCompose( phi, psi )", 1 ] ];
+# objects := [ [ "A", [ 0, 5 ] ],
+#              [ "B", [ 1, 6 ] ] ];
+# 
+# morphisms := [ [ "phi", [ "A", "B" ], 1, [ 0, 5 ], "\\phi" ],
+#           [ "psi", [ "B", "A" ], -1, [ 1, 6 ], "\\psi" ] ];
+# 
+# relations := [ [ "PreCompose( phi, psi )", "A" ] ];
 
-InstallOtherMethod( DgCochainComplexCategory,
-        [ IsList, IsList, IsList ],
+# DgCochainComplexCategoryFromGeneratorsAndRelations( objects, morphisms, relations )
+#
+# Constructs a Dg cochain complex category from a generators-and-relations presentation.
+# The underlying linear category is k-linear (over Q), taken as an additive closure of
+# the path category of the induced quiver modulo the given relations plus d^2 = 0.
+# As a side effect, each object and morphism name is declared as a global synonym
+# for the corresponding DgCochainComplex / DgCochainComplexMorphism.
+#
+# Arguments:
+#   objects: list of entries [ name, [ lower, upper ] ] or [ name, [ lower, upper ], latex ]
+#     - name:  string, label for the object (also declared as a global synonym)
+#     - [lower, upper]: cohomological support interval
+#     - latex: optional LaTeX string (defaults to name)
+#
+#   morphisms: list of entries [ name, [ src_label, tgt_label ], degree, bounds, latex ]
+#     - name:       string, label for the morphism (also declared as a global synonym)
+#     - src_label, tgt_label: labels of source/target objects (strings)
+#     - degree:     integer, the cohomological degree shift
+#     - bounds:     [ lower, upper ] restricting which components exist, or fail for automatic
+#     - latex:      optional LaTeX string (defaults to name)
+#
+#   relations: list of entries [ expr_string, src_object_label ]
+#     - expr_string:      GAP expression (string) evaluating to a DgCochainComplexMorphism
+#     - src_object_label: label of the source object of the relation morphism
+#
+# Returns the Dg cochain complex category dgCh( AdditiveClosure( oid ) )
+# where oid is the algebroid associated defined by the quiver with objects and morphisms modulo the given relations.
+# Data tables can be accessed via CategoryDatum( oid ).
+BindGlobal( "DgCochainComplexCategoryFromGeneratorsAndRelations",
         
   function ( objects, morphisms, relations )
     local lower_bound, upper_bound, o, d, m, q, F, k, kF, additive_closure, dgCh_additive_closure, i,
-      mat, linear_rels, rel, kF_rels, morphism_info, object_info, obj, relation_info;
+      mat, linear_rels, rel, oid, morphism_info, object_info, obj, relation_info;
     
     for object_info in objects do
         
@@ -64,6 +104,12 @@ InstallOtherMethod( DgCochainComplexCategory,
     od;
      
     for morphism_info in morphisms do
+        
+        if IsString( morphism_info[2][1] ) then
+            morphism_info[2] := [
+                PositionProperty( objects, o -> o[1] = morphism_info[2][1] ),
+                PositionProperty( objects, o -> o[1] = morphism_info[2][2] ) ];
+        fi;
         
         if IsList( morphism_info[4] ) then
           
@@ -161,7 +207,10 @@ InstallOtherMethod( DgCochainComplexCategory,
     
     for object_info in objects do
         
-        MakeReadWriteGlobal( object_info[1] );
+        if IsBoundGlobal( object_info[1] ) then
+            MakeReadWriteGlobal( object_info[1] );
+            UnbindGlobal( object_info[1] );
+        fi;
         
         DeclareSynonym( object_info[1],
             DgCochainComplex(
@@ -173,7 +222,10 @@ InstallOtherMethod( DgCochainComplexCategory,
     
     for morphism_info in morphisms do
         
-        MakeReadWriteGlobal( morphism_info[1] );
+        if IsBoundGlobal( morphism_info[1] ) then
+            MakeReadWriteGlobal( morphism_info[1] );
+            UnbindGlobal( morphism_info[1] );
+        fi;
         
         DeclareSynonym( morphism_info[1],
             DgCochainComplexMorphism(
@@ -197,7 +249,8 @@ InstallOtherMethod( DgCochainComplexCategory,
     
     for relation_info in relations do
         m := EvalString( relation_info[1] );
-        for i in [ objects[relation_info[2]][2][1] .. objects[relation_info[2]][2][2] ] do
+        obj := First( objects, o -> o[1] = relation_info[2] );
+        for i in [ obj[2][1] .. obj[2][2] ] do
             mat := MorphismMatrix( m[i] );
             if IsBound( mat[1] ) and IsBound( mat[1][1] ) then
                 Add( linear_rels, mat[1,1] );
@@ -205,27 +258,33 @@ InstallOtherMethod( DgCochainComplexCategory,
         od;
     od;
     
-    kF_rels := kF / linear_rels;
+    oid := AlgebroidFromDataTables( kF / linear_rels );
     
-    additive_closure := AdditiveClosure( kF_rels );
+    additive_closure := AdditiveClosure( oid );
     
     dgCh_additive_closure := DgCochainComplexCategory( additive_closure );
     
     for object_info in objects do
         
-        MakeReadWriteGlobal( object_info[1] );
+        if IsBoundGlobal( object_info[1] ) then
+            MakeReadWriteGlobal( object_info[1] );
+            UnbindGlobal( object_info[1] );
+        fi;
         
         DeclareSynonym( object_info[1],
             DgCochainComplex(
                 dgCh_additive_closure,
                 List( [ object_info[2][1] .. object_info[2][2] - 1 ],
-                  i -> kF_rels.( Concatenation( "d", object_info[1], "_", ReplacedString( String(i), "-", "m" ) ) ) / additive_closure ),
+                  i -> oid.( Concatenation( "d", object_info[1], "_", ReplacedString( String(i), "-", "m" ) ) ) / additive_closure ),
                 object_info[2][1] ) );
     od;
     
     for morphism_info in morphisms do
         
-        MakeReadWriteGlobal( morphism_info[1] );
+        if IsBoundGlobal( morphism_info[1] ) then
+            MakeReadWriteGlobal( morphism_info[1] );
+            UnbindGlobal( morphism_info[1] );
+        fi;
         
         DeclareSynonym( morphism_info[1],
             DgCochainComplexMorphism(
@@ -233,11 +292,11 @@ InstallOtherMethod( DgCochainComplexCategory,
                 EvalString( objects[morphism_info[2][1]][1] ),
                 EvalString( objects[morphism_info[2][2]][1] ),
                 morphism_info[3],
-                List( [ morphism_info[4][1] .. morphism_info[4][2] ], i -> kF_rels.( Concatenation( morphism_info[1], "_", ReplacedString( String(i), "-", "m" ) ) ) / additive_closure ),
+                List( [ morphism_info[4][1] .. morphism_info[4][2] ], i -> oid.( Concatenation( morphism_info[1], "_", ReplacedString( String(i), "-", "m" ) ) ) / additive_closure ),
                 morphism_info[4][1] ) );
     
     od;
     
-    return kF_rels;
+    return dgCh_additive_closure;
     
 end );
