@@ -72,7 +72,7 @@ Dependencies := rec(
                             [ "ComplexesCategories", ">= 2022.09-01" ],
                          ],
   SuggestedOtherPackages := [
-                              [ "Algebroids", ">= 2023.02-01" ]
+                              [ "FpLinearCategories", ">= 2023.02-01" ]
                             ],
   ExternalConditions := [ ],
 ),

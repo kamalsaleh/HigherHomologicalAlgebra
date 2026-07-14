@@ -121,19 +121,35 @@ InstallOtherMethod( DgCochainComplexCategory,
                                             String( j ),
                                             "}" ) ] ) ) );
     
-    q := RightQuiver(
-                Concatenation(
-                    "q(",
-                    JoinStringsWithSeparator( List( o, z -> z[1] ), "," ),
-                    ")[",
-                    JoinStringsWithSeparator( List( d, z -> z[1] ), "," ),
-                    ",",
-                    JoinStringsWithSeparator( List( m, z -> z[1] ), "," ),
-                    "]" ) );
+    q := (function()
+        local o_labels, parse_src, parse_tgt, dm;
+        o_labels := List( o, z -> z[1] );
+        parse_src := function( label )
+            local colon, arrow;
+            colon := Position( label, ':' );
+            arrow := PositionSublist( label, "->", colon );
+            return label{[ colon + 1 .. arrow - 1 ]};
+        end;
+        parse_tgt := function( label )
+            local colon, arrow;
+            colon := Position( label, ':' );
+            arrow := PositionSublist( label, "->", colon );
+            return label{[ arrow + 2 .. Length( label ) ]};
+        end;
+        dm := Concatenation( d, m );
+        return FinQuiver( [
+            "q",
+            [ Length( o ),
+              o_labels,
+              List( o, z -> z[2] ) ],
+            [ Length( dm ),
+              List( dm, z -> Position( o_labels, parse_src( z[1] ) ) ),
+              List( dm, z -> Position( o_labels, parse_tgt( z[1] ) ) ),
+              List( dm, z -> SplitString( z[1], ":" )[1] ),
+              List( dm, z -> z[2] ) ] ] );
+    end)();
     
-    SetLabelsAsLaTeXStrings( q, List( o, z -> z[2] ), Concatenation( List( d, z -> z[2] ), List( m, z -> z[2] ) ) );
-    
-    F := FreeCategory( q );
+    F := PathCategory( q );
     
     k := HomalgFieldOfRationals( );
     
